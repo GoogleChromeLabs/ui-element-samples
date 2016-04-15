@@ -108,7 +108,7 @@ class Cards {
     this.target.style.transform = `translateX(${this.screenX}px)`;
     this.target.style.opacity = opacity;
 
-    // User has finished dragging.
+    // User is still dragging a card.
     if (this.draggingCard)
       return;
 
@@ -165,9 +165,7 @@ class Cards {
     }
 
     // If we didn't find any cards to slide remove the target.
-    if (!isAfterCurrentTarget) {
-      this.resetTarget();
-    }
+    this.resetTarget();
   }
 
   resetTarget () {
