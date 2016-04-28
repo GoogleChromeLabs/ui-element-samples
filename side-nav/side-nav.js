@@ -31,7 +31,7 @@ class SideNav {
     this.onTouchMove = this.onTouchMove.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.onTransitionEnd = this.onTransitionEnd.bind(this);
-    this.onKeyPress = this.onKeyPress.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
 
     this.startX = 0;
     this.currentX = 0;
