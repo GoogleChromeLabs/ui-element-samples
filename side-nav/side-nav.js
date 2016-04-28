@@ -48,10 +48,10 @@ class SideNav {
     document.addEventListener('touchstart', this.onTouchStart);
     document.addEventListener('touchmove', this.onTouchMove);
     document.addEventListener('touchend', this.onTouchEnd);
-    document.addEventListener('keydown', this.onKeyPress);
+    document.addEventListener('keydown', this.onKeyDown);
   }
   
-  onKeyPress (evt) {
+  onKeyDown (evt) {
     if (evt.keyCode == 27 && this.sideNavEl.classList.contains('side-nav--visible')){
       this.hideSideNav();
       evt.preventDefault();
@@ -109,4 +109,4 @@ class SideNav {
   }
 }
 
-var test = new SideNav();
+new SideNav();
