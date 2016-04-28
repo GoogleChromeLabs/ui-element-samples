@@ -31,6 +31,7 @@ class SideNav {
     this.onTouchMove = this.onTouchMove.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
     this.onTransitionEnd = this.onTransitionEnd.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
 
     this.startX = 0;
     this.currentX = 0;
@@ -47,6 +48,15 @@ class SideNav {
     document.addEventListener('touchstart', this.onTouchStart);
     document.addEventListener('touchmove', this.onTouchMove);
     document.addEventListener('touchend', this.onTouchEnd);
+    document.addEventListener('keydown', this.onKeyDown);
+  }
+  
+  onKeyDown (evt) {
+    if (evt.keyCode == 27 && this.sideNavEl.classList.contains('side-nav--visible')){
+      this.hideSideNav();
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
   }
 
   onTouchStart (evt) {
