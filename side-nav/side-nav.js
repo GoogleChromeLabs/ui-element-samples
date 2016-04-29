@@ -55,7 +55,7 @@ class SideNav {
     // break if not escape key
     if (evt.keyCode !== 27) return;
 
-    // hide only visible menu 
+    // and then if the menu is not visible already
     if (!this.sideNavEl.classList.contains('side-nav--visible')) return;
 
     this.hideSideNav();
