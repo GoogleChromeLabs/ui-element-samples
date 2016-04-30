@@ -18,7 +18,7 @@
 'use strict';
 
 class SideNav {
-  constructor() {
+  constructor () {
     this.showButtonEl = document.querySelector('.js-menu-show');
     this.hideButtonEl = document.querySelector('.js-menu-hide');
     this.sideNavEl = document.querySelector('.js-side-nav');
@@ -39,7 +39,7 @@ class SideNav {
     this.addEventListeners();
   }
 
-  addEventListeners() {
+  addEventListeners () {
     this.showButtonEl.addEventListener('click', this.showSideNav);
     this.hideButtonEl.addEventListener('click', this.hideSideNav);
     this.sideNavEl.addEventListener('click', this.hideSideNav);
@@ -50,20 +50,16 @@ class SideNav {
     document.addEventListener('touchend', this.onTouchEnd);
     document.addEventListener('keydown', this.onKeyDown);
   }
-
-  onKeyDown(evt) {
-    // break if not escape key
-    if (evt.keyCode !== 27) return;
-
-    // hide only visible menu 
-    if (!this.sideNavEl.classList.contains('side-nav--visible')) return;
-
-    this.hideSideNav();
-    evt.preventDefault();
-    evt.stopPropagation();
+  
+  onKeyDown (evt) {
+    if (evt.keyCode == 27 && this.sideNavEl.classList.contains('side-nav--visible')){
+      this.hideSideNav();
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
   }
 
-  onTouchStart(evt) {
+  onTouchStart (evt) {
     if (!this.sideNavEl.classList.contains('side-nav--visible'))
       return;
 
@@ -71,7 +67,7 @@ class SideNav {
     this.currentX = this.startX;
   }
 
-  onTouchMove(evt) {
+  onTouchMove (evt) {
     this.currentX = evt.touches[0].pageX;
     const translateX = Math.min(0, this.currentX - this.startX);
 
@@ -82,7 +78,7 @@ class SideNav {
     this.sideNavContainerEl.style.transform = `translateX(${translateX}px)`;
   }
 
-  onTouchEnd(evt) {
+  onTouchEnd (evt) {
     const translateX = Math.min(0, this.currentX - this.startX);
     this.sideNavContainerEl.style.transform = '';
 
@@ -91,22 +87,22 @@ class SideNav {
     }
   }
 
-  blockClicks(evt) {
+  blockClicks (evt) {
     evt.stopPropagation();
   }
 
-  onTransitionEnd(evt) {
+  onTransitionEnd (evt) {
     this.sideNavEl.classList.remove('side-nav--animatable');
     this.sideNavEl.removeEventListener('transitionend', this.onTransitionEnd);
   }
 
-  showSideNav() {
+  showSideNav () {
     this.sideNavEl.classList.add('side-nav--animatable');
     this.sideNavEl.classList.add('side-nav--visible');
     this.sideNavEl.addEventListener('transitionend', this.onTransitionEnd);
   }
 
-  hideSideNav() {
+  hideSideNav () {
     this.sideNavEl.classList.add('side-nav--animatable');
     this.sideNavEl.classList.remove('side-nav--visible');
     this.sideNavEl.addEventListener('transitionend', this.onTransitionEnd);
