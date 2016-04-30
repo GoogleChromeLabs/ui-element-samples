@@ -52,11 +52,14 @@ class SideNav {
   }
   
   onKeyDown (evt) {
-    if (evt.keyCode == 27 && this.sideNavEl.classList.contains('side-nav--visible')){
-      this.hideSideNav();
-      evt.preventDefault();
-      evt.stopPropagation();
-    }
+    if (evt.keyCode !== 27)
+      return;
+      
+    if (!this.sideNavEl.classList.contains('side-nav--visible'))
+      return;
+    
+    this.hideSideNav();
+    evt.preventDefault();
   }
 
   onTouchStart (evt) {
