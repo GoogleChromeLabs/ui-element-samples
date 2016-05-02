@@ -24,8 +24,7 @@ class SideNav {
     this.sideNavEl = document.querySelector('.js-side-nav');
     this.sideNavContainerEl = document.querySelector('.js-side-nav-container');
 
-    this.showSideNav = this.showSideNav.bind(this);
-    this.hideSideNav = this.hideSideNav.bind(this);
+    this.toggleSideNav = this.toggleSideNav.bind(this);
     this.blockClicks = this.blockClicks.bind(this);
     this.onTouchStart = this.onTouchStart.bind(this);
     this.onTouchMove = this.onTouchMove.bind(this);
@@ -36,14 +35,15 @@ class SideNav {
     this.startX = 0;
     this.currentX = 0;
     this.touchingSideNav = false;
+    this.isOpen = false;
 
     this.addEventListeners();
   }
 
   addEventListeners () {
-    this.showButtonEl.addEventListener('click', this.showSideNav);
-    this.hideButtonEl.addEventListener('click', this.hideSideNav);
-    this.sideNavEl.addEventListener('click', this.hideSideNav);
+    this.showButtonEl.addEventListener('click', this.toggleSideNav);
+    this.hideButtonEl.addEventListener('click', this.toggleSideNav);
+    this.sideNavEl.addEventListener('click', this.toggleSideNav);
     this.sideNavContainerEl.addEventListener('click', this.blockClicks);
 
     document.addEventListener('touchstart', this.onTouchStart);
@@ -52,8 +52,9 @@ class SideNav {
   }
 
   onTouchStart (evt) {
-    if (!this.sideNavEl.classList.contains('side-nav--visible'))
+    if (!this.isOpen) {
       return;
+    }
 
     this.startX = evt.touches[0].pageX;
     this.currentX = this.startX;
@@ -71,23 +72,29 @@ class SideNav {
     }
   }
 
-  onTouchEnd (evt) {
+  onTouchEnd () {
+    if (!this.isOpen) {
+      return;
+    }
+
     this.touchingSideNav = false;
 
     const translateX = Math.min(0, this.currentX - this.startX);
     this.sideNavContainerEl.style.transform = '';
 
     if (translateX < 0) {
-      this.hideSideNav();
+      this.toggleSideNav();
     }
   }
 
   update () {
-    if (!this.sideNavEl.classList.contains('side-nav--visible'))
+    if (!this.sideNavEl.classList.contains('side-nav--visible')) {
       return;
+    }
 
-    if (this.touchingSideNav)
+    if (this.touchingSideNav) {
       requestAnimationFrame(this.update);
+    }
 
     const translateX = Math.min(0, this.currentX - this.startX);
     this.sideNavContainerEl.style.transform = `translateX(${translateX}px)`;
@@ -97,20 +104,15 @@ class SideNav {
     evt.stopPropagation();
   }
 
-  onTransitionEnd (evt) {
+  onTransitionEnd () {
     this.sideNavEl.classList.remove('side-nav--animatable');
     this.sideNavEl.removeEventListener('transitionend', this.onTransitionEnd);
   }
 
-  showSideNav () {
+  toggleSideNav () {
+    this.isOpen = !this.isOpen;
     this.sideNavEl.classList.add('side-nav--animatable');
-    this.sideNavEl.classList.add('side-nav--visible');
-    this.sideNavEl.addEventListener('transitionend', this.onTransitionEnd);
-  }
-
-  hideSideNav () {
-    this.sideNavEl.classList.add('side-nav--animatable');
-    this.sideNavEl.classList.remove('side-nav--visible');
+    this.sideNavEl.classList.toggle('side-nav--visible');
     this.sideNavEl.addEventListener('transitionend', this.onTransitionEnd);
   }
 }
