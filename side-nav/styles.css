@@ -26,6 +26,15 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+}
+
 .header {
   width: 100%;
   height: 56px;
@@ -46,6 +55,10 @@ html, body {
   padding: 0;
   margin: 0;
   color: #FFF;
+}
+
+.body {
+  flex-grow: 1;
 }
 
 .side-nav {
@@ -73,7 +86,6 @@ html, body {
   background: rgba(0,0,0,0.4);
   opacity: 0;
   will-change: opacity;
-  transition: opacity 0.3s cubic-bezier(0,0,0.3,1);
 }
 
 .side-nav__container {
@@ -87,6 +99,14 @@ html, body {
   display: flex;
   flex-direction: column;
   will-change: transform;
+}
+
+.side-nav--visible.side-nav--animatable.side-nav--visible::before {
+  transition: opacity 0.33s cubic-bezier(0,0,0.3,1);
+}
+
+.side-nav--animatable.side-nav::before {
+  transition: opacity 0.13s cubic-bezier(0,0,0.3,1);
 }
 
 .side-nav--animatable .side-nav__container {

@@ -23,6 +23,8 @@ class SideNav {
     this.hideButtonEl = document.querySelector('.js-menu-hide');
     this.sideNavEl = document.querySelector('.js-side-nav');
     this.sideNavContainerEl = document.querySelector('.js-side-nav-container');
+    this.bodyEl = document.querySelector('.js-body');
+    this.styleEl = document.head.appendChild(document.createElement('style'));
 
     this.showSideNav = this.showSideNav.bind(this);
     this.hideSideNav = this.hideSideNav.bind(this);
@@ -36,6 +38,7 @@ class SideNav {
     this.startX = 0;
     this.currentX = 0;
     this.touchingSideNav = false;
+    this.isHidden = true;
 
     this.addEventListeners();
   }
@@ -49,13 +52,19 @@ class SideNav {
     this.sideNavEl.addEventListener('touchstart', this.onTouchStart);
     this.sideNavEl.addEventListener('touchmove', this.onTouchMove);
     this.sideNavEl.addEventListener('touchend', this.onTouchEnd);
+    this.bodyEl.addEventListener('touchstart', this.onTouchStart);
+    this.bodyEl.addEventListener('touchmove', this.onTouchMove);
+    this.bodyEl.addEventListener('touchend', this.onTouchEnd);
   }
 
   onTouchStart (evt) {
-    if (!this.sideNavEl.classList.contains('side-nav--visible'))
-      return;
-
-    this.startX = evt.touches[0].pageX;
+    if (this.isHidden) {
+      // 30px activation area
+      if (evt.touches[0].pageX > 30) return;
+      this.sideNavEl.classList.add('side-nav--visible');
+    }
+    this.sideNavBCR = this.sideNavContainerEl.getBoundingClientRect();
+    this.startX = Math.min(evt.touches[0].pageX, this.sideNavBCR.right);
     this.currentX = this.startX;
 
     this.touchingSideNav = true;
@@ -67,11 +76,12 @@ class SideNav {
       return;
 
     this.currentX = evt.touches[0].pageX;
-    const translateX = Math.min(0, this.currentX - this.startX);
-
-    if (translateX < 0) {
-      evt.preventDefault();
+    if (!this.isHidden) {
+      if (this.currentX > this.startX) this.startX = this.currentX;
+      this.startX = Math.min(this.startX, this.sideNavBCR.right);
     }
+
+    evt.preventDefault();
   }
 
   onTouchEnd (evt) {
@@ -80,12 +90,15 @@ class SideNav {
 
     this.touchingSideNav = false;
 
-    const translateX = Math.min(0, this.currentX - this.startX);
+    const translateX = this.currentX - this.startX;
     this.sideNavContainerEl.style.transform = '';
 
     if (translateX < 0) {
       this.hideSideNav();
+    } else {
+      this.showSideNav();
     }
+    this.styleEl.innerHTML = '';
   }
 
   update () {
@@ -94,7 +107,16 @@ class SideNav {
 
     requestAnimationFrame(this.update);
 
-    const translateX = Math.min(0, this.currentX - this.startX);
+    let translateX;
+    if (this.isHidden) {
+      // 102% translation
+      translateX = this.currentX - this.startX - this.sideNavBCR.width * 1.02;
+    } else {
+      translateX = this.currentX - this.startX;
+    }
+    translateX = Math.min(0, translateX);
+    const opacity = 1 - -translateX / this.sideNavBCR.width;
+    this.styleEl.innerHTML = `.side-nav::before { opacity: ${opacity}; }`;
     this.sideNavContainerEl.style.transform = `translateX(${translateX}px)`;
   }
 
@@ -111,12 +133,14 @@ class SideNav {
     this.sideNavEl.classList.add('side-nav--animatable');
     this.sideNavEl.classList.add('side-nav--visible');
     this.sideNavEl.addEventListener('transitionend', this.onTransitionEnd);
+    this.isHidden = false;
   }
 
   hideSideNav () {
     this.sideNavEl.classList.add('side-nav--animatable');
     this.sideNavEl.classList.remove('side-nav--visible');
     this.sideNavEl.addEventListener('transitionend', this.onTransitionEnd);
+    this.isHidden = true;
   }
 }
 
