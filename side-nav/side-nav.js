@@ -61,7 +61,6 @@ class SideNav {
     if (this.isHidden) {
       // 30px activation area
       if (evt.touches[0].pageX > 30) return;
-      this.sideNavEl.classList.add('side-nav--visible');
     }
     this.sideNavBCR = this.sideNavContainerEl.getBoundingClientRect();
     this.startX = Math.min(evt.touches[0].pageX, this.sideNavBCR.right);
@@ -93,10 +92,13 @@ class SideNav {
     const translateX = this.currentX - this.startX;
     this.sideNavContainerEl.style.transform = '';
 
-    if (translateX < 0) {
+    if (translateX < - this.sideNavBCR.width / 2) {
       this.hideSideNav();
-    } else {
+    } else if (translateX > this.sideNavBCR.width / 2) {
       this.showSideNav();
+    } else {
+      this.sideNavEl.classList.add('side-nav--animatable');
+      this.sideNavEl.addEventListener('transitionend', this.onTransitionEnd);
     }
     this.styleEl.innerHTML = '';
   }
