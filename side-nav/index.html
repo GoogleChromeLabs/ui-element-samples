@@ -28,18 +28,25 @@ limitations under the License.
 
   <aside class="js-side-nav side-nav">
     <nav class="js-side-nav-container side-nav__container">
-      <button class="js-menu-hide side-nav__hide material-icons">close</button>
-      <header class="side-nav__header">
-        Side Nav
-      </header>
-      <ul class="side-nav__content">
-        <li>One</li>
-        <li>Two</li>
-        <li>Three</li>
-        <li>Four</li>
-      </ul>
+      <!--
+      Any element which could receive focus goes in here so we can make it
+      inert when the nav is offscreen
+      -->
+      <div class="js-side-nav-focusable">
+        <button class="js-menu-hide side-nav__hide material-icons">close</button>
+        <header class="side-nav__header">
+          Side Nav
+        </header>
+        <ul class="side-nav__content">
+          <li>Home</li>
+          <li>About</li>
+          <li>Shop</li>
+          <li>Contact</li>
+        </ul>
+      </div>
     </nav>
   </aside>
+
   <script src='./side-nav.js'></script>
 </body>
 </html>

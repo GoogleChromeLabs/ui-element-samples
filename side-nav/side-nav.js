@@ -23,6 +23,7 @@ class SideNav {
     this.hideButtonEl = document.querySelector('.js-menu-hide');
     this.sideNavEl = document.querySelector('.js-side-nav');
     this.sideNavContainerEl = document.querySelector('.js-side-nav-container');
+    this.sideNavFocusableEl = document.querySelector('.js-side-nav-focusable');
 
     this.showSideNav = this.showSideNav.bind(this);
     this.hideSideNav = this.hideSideNav.bind(this);
@@ -36,6 +37,8 @@ class SideNav {
     this.startX = 0;
     this.currentX = 0;
     this.touchingSideNav = false;
+
+    this.sideNavFocusableEl.style.visibility = 'hidden';
 
     this.addEventListeners();
   }
@@ -104,12 +107,16 @@ class SideNav {
 
   onTransitionEnd (evt) {
     this.sideNavEl.classList.remove('side-nav--animatable');
+    if (!this.sideNavEl.classList.contains('side-nav--visible')) {
+      this.sideNavFocusableEl.style.visibility = 'hidden';
+    }
     this.sideNavEl.removeEventListener('transitionend', this.onTransitionEnd);
   }
 
   showSideNav () {
     this.sideNavEl.classList.add('side-nav--animatable');
     this.sideNavEl.classList.add('side-nav--visible');
+    this.sideNavFocusableEl.style.visibility = 'visible';
     this.sideNavEl.addEventListener('transitionend', this.onTransitionEnd);
   }
 
