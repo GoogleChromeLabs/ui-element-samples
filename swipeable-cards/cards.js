@@ -32,6 +32,10 @@ class Cards {
     this.screenX = 0;
     this.targetX = 0;
     this.draggingCard = false;
+    this.draggingStart = false;
+
+    this.startY = 0;
+    this.currentY = 0;
 
     this.addEventListeners();
 
@@ -57,14 +61,17 @@ class Cards {
 
     this.target = evt.target;
     this.targetBCR = this.target.getBoundingClientRect();
+    this.targetX = 0;
 
     this.startX = evt.pageX || evt.touches[0].pageX;
     this.currentX = this.startX;
 
+    this.startY = evt.pageY || evt.touches[0].pageY;
+    this.currentY = this.startY;
+    this.draggingStart = false;
+
     this.draggingCard = true;
     this.target.style.willChange = 'transform';
-
-    evt.preventDefault();
   }
 
   onMove (evt) {
@@ -72,6 +79,21 @@ class Cards {
       return;
 
     this.currentX = evt.pageX || evt.touches[0].pageX;
+    this.currentY = evt.pageY || evt.touches[0].pageY;
+
+    // Check if Y is more than X
+    // If Y is more cancel the animation
+    if (!this.draggingStart) {
+      const screenX = this.currentX - this.startX;
+      const screenY = this.currentY - this.startY;
+
+      this.draggingStart = true;
+      if (Math.abs(screenY) > Math.abs(screenX)) {
+        this.draggingCard = false;
+        return;
+      }
+    }
+    evt.preventDefault();
   }
 
   onEnd (evt) {
@@ -88,6 +110,7 @@ class Cards {
     }
 
     this.draggingCard = false;
+    this.draggingStart = false;
   }
 
   update () {
