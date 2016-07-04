@@ -71,7 +71,8 @@ class SCView extends HTMLElement {
         // Clear the timeout and remove the spinner if needed.
         clearTimeout(spinnerTimeout);
         this._hideSpinner();
-      });
+      })
+      .catch(err => console.log('something went wrong', err));
   }
 
   in (data) {
