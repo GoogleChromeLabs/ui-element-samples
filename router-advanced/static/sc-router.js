@@ -23,11 +23,12 @@ class SCRouter extends HTMLElement {
     const path = window.location.pathname;
     const routes = Array.from(this._routes.keys());
     const route = routes.find(r => r.test(path));
-    const data = route.exec(path);
 
     if (!route) {
       return;
     }
+
+    const data = route.exec(path);
 
     // Store the new view.
     this._newView = this._routes.get(route);

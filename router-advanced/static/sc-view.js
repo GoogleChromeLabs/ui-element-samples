@@ -23,6 +23,7 @@ class SCView extends HTMLElement {
     this._spinnerTimeout = undefined;
     this._view = null;
     this._isRemote = (this.getAttribute('remote') !== null);
+    this._domParser = new DOMParser();
   }
 
   get route () {
@@ -45,27 +46,33 @@ class SCView extends HTMLElement {
     const spinnerTimeout = setTimeout(_ => this._showSpinner(), 500);
 
     this._view = new DocumentFragment();
-    const xhr = new XMLHttpRequest();
 
-    xhr.onload = evt => {
-      const newDoc = evt.target.response;
-      const newView = newDoc.querySelector('sc-view.visible');
-
-      // Copy in the child nodes from the parent.
-      newView.childNodes.forEach(node => {
-        this._view.appendChild(node);
-      });
-
-      // Add the fragment to the page.
-      this.appendChild(this._view);
-
-      // Clear the timeout and remove the spinner if needed.
-      clearTimeout(spinnerTimeout);
-      this._hideSpinner();
+    const delayPromise = function(data, delay) {
+      return new Promise((resolve) => {
+               setTimeout(_ => resolve(data), delay);
+             });
     };
-    xhr.responseType = 'document';
-    xhr.open('GET', `${data[0]}?delay=${delay}`);
-    xhr.send();
+
+    fetch(data[0])
+      .then(response => delayPromise(response, delay))
+      .then(response => response.text())
+      .then(responseAsText => {
+        const newDoc = this._domParser.parseFromString(responseAsText, 'text/html');
+        const newView = newDoc.querySelector('sc-view.visible');
+
+        // Copy in the child nodes from the parent.
+        newView.childNodes.forEach(node => {
+          this._view.appendChild(node);
+        });
+
+        // Add the fragment to the page.
+        this.appendChild(this._view);
+
+        // Clear the timeout and remove the spinner if needed.
+        clearTimeout(spinnerTimeout);
+        this._hideSpinner();
+      })
+      .catch(err => console.log('something went wrong', err));
   }
 
   in (data) {
