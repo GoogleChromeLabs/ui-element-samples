@@ -11,6 +11,10 @@
   contain: layout;
 }
 
+#chat-timeline:focus {
+  outline-offset: -.2em;
+}
+
 .chat-item {
   display: flex;
   padding: 10px 0;
