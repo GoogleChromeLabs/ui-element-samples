@@ -74,6 +74,7 @@ limitations under the License.
   <script src="stats.min.js"></script>
   <script src="scripts/infinite-scroll.js"></script>
   <script src="scripts/messages.js"></script>
+  <script src="scripts/focus-attributes.js"></script>
   <script>
 var INIT_TIME = new Date().getTime();
 
@@ -176,11 +177,13 @@ function numDomNodes(node) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  var chatTimeline = document.querySelector('#chat-timeline');
   window.scroller =
     new InfiniteScroller(
-      document.querySelector('#chat-timeline'),
+      chatTimeline,
       new ContentSource()
     );
+  new FocusAttributes(chatTimeline);
 
   var stats = new Stats();
   var domPanel = new Stats.Panel('DOM Nodes', '#0ff', '#002');
