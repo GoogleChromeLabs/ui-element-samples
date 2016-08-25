@@ -72,8 +72,8 @@ html, body {
   height: 100%;
   background: rgba(0,0,0,0.4);
   opacity: 0;
+  opacity: var(--current-opacity, 0);
   will-change: opacity;
-  transition: opacity 0.3s cubic-bezier(0,0,0.3,1);
 }
 
 .side-nav__container {
@@ -89,6 +89,10 @@ html, body {
   will-change: transform;
 }
 
+.side-nav--animatable::before {
+  transition: opacity 0.3s cubic-bezier(0,0,0.3,1);
+}
+
 .side-nav--animatable .side-nav__container {
   transition: transform 0.13s cubic-bezier(0,0,0.3,1);
 }
@@ -99,6 +103,7 @@ html, body {
 
 .side-nav--visible::before {
   opacity: 1;
+  opacity: var(--current-opacity, 1);
 }
 
 .side-nav--visible .side-nav__container {

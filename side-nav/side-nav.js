@@ -103,6 +103,7 @@ class SideNav {
 
     const translateX = Math.min(0, this.currentX - this.startX);
     this.sideNavContainerEl.style.transform = '';
+    this.sideNavEl.style.removeProperty('--current-opacity');
 
     if (translateX < 0) {
       this.hideSideNav();
@@ -117,6 +118,8 @@ class SideNav {
 
     const translateX = Math.min(0, this.currentX - this.startX);
     this.sideNavContainerEl.style.transform = `translateX(${translateX}px)`;
+    this.sideNavEl.style.setProperty('--current-opacity',
+        Math.min(Math.max(this.currentX / this.startX, 0), 1));
   }
 
   blockClicks (evt) {
