@@ -87,7 +87,7 @@ class Cards {
     if (!this.target)
       return;
 
-    this.currentX = evt.pageX || evt.touches[0].pageX;
+    this.currentX = evt.pageX || (evt.touches ? evt.touches[0].pageX : 0);
   }
 
   onEnd (evt) {
