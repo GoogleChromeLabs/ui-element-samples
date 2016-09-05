@@ -59,6 +59,7 @@ class Cards {
       let mutation = mutations[i];
       if (mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeType === 1 && mutation.addedNodes[0].classList.contains('card')) {
         this.cards = Array.from(document.querySelectorAll('.card'));
+        return;
       }
     }
   }
