@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- DO NOT SUBMIT: Fix Page Title. Missing tags? http://go/optional-html -->
+<title>Page Title</title>
+
+<style>
+@keyframes b4-anim {
+  0% { opacity: 0; }
+  66% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes b3-anim {
+  0% { opacity: 0; }
+  33% { opacity: 0; }
+  66% { opacity: 1; }
+  99% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes b2-anim {
+  0% { opacity: 0; }
+  33% { opacity: 1; }
+  66% { opacity: 1; }
+  67% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes b1-anim {
+  0% { opacity: 1; }
+  33% { opacity: 1; }
+  34% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes container-anim {
+  0% { transform: scale(1); }
+  100% { transform: scale(0.75); }
+}
+
+body {
+  margin: 0;
+  background: white;
+}
+
+img, div {
+  width: 200px;
+  height: 200px;
+}
+
+img, svg {
+  position: absolute;
+  top: 5px;
+}
+
+#container {
+  animation: container-anim 1s infinite alternate linear;
+}
+
+#b1 {
+  animation: b1-anim 1s infinite alternate linear;
+}
+
+#b2 {
+  animation: b2-anim 1s infinite alternate linear;
+}
+
+#b3 {
+  animation: b3-anim 1s infinite alternate linear;
+}
+
+#b4 {
+  animation: b4-anim 1s infinite alternate linear;
+}
+</style>
+<div id='container'>
+  <svg id="b1" width="800" height="800">
+    <defs>
+    <filter id="f1" x="0" y="0">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0" />
+    </filter>
+  </defs>
+  <image xlink:href="./images/Stanford_Bunny.png" x="0" y="0" width="800px" height="800px" filter="url(#f1)"></image>
+  </svg>
+  <svg id="b2" width="800" height="800">
+    <defs>
+    <filter id="f2" x="0" y="0">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
+    </filter>
+  </defs>
+  <image xlink:href="./images/Stanford_Bunny.png" x="0" y="0" width="800px" height="800px" filter="url(#f2)"></image>
+  </svg>
+  <svg id="b3" width="800" height="800">
+    <defs>
+    <filter id="f3" x="0" y="0">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" />
+    </filter>
+  </defs>
+  <image xlink:href="./images/Stanford_Bunny.png" x="0" y="0" width="800px" height="800px" filter="url(#f3)"></image>
+  </svg>
+  <svg id="b4" width="800" height="800">
+    <defs>
+    <filter id="f4" x="0" y="0">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="12" />
+    </filter>
+  </defs>
+  <image xlink:href="./images/Stanford_Bunny.png" x="0" y="0" width="800px" height="800px" filter="url(#f4)"></image>
+  </svg>
+</div>
