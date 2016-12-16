@@ -4,52 +4,55 @@
 <title>Animated Blur</title>
 
 <style>
-@keyframes container-anim {
-  0% { transform: scale(1); }
-  100% { transform: scale(0.5); }
-}
 
 body {
-  margin: 0;
-  background: white;
-}
-
-img, div {
-  width: 200px;
-  height: 200px;
-}
-
-img, svg {
-  position: absolute;
-  top: 5px;
-}
-
-.scene {
-  height: 50%;
+  background: green;
 }
 
 .viewport {
-  height: 100%;
+  width: 800px;
+  height: 600px;
   position: relative;
+  background: green;
 }
 
-#container.animated {
-  animation: container-anim 1s infinite alternate linear;
+svg {
+  position: absolute;
+  top: 5px;
+  display: block;
+  margin: 0 auto;
 }
+
+.svg-tooltip {
+  pointer-events: none;
+}
+.tooltip {
+  padding: 10px;
+  color: blue;
+}
+p {
+  margin: 5px 0px;
+}
+polygon {
+  pointer-events: none;
+}
+
 </style>
 
-
-<div id="container">
-  <svg id="blur" width="800" height="800">
-    <defs>
-    <filter id="filter" x="0" y="0">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="0" />
-    </filter>
-  </defs>
-  <image id="img" xlink:href="./images/Stanford_Bunny.png" x="0" y="0" width="800px" height="800px" filter="url(#filter)"></image>
-  </svg>
+<div id ="viewport" class="viewport">
+  <div id="container">
+    <svg id="blur" width="800" height="800">
+      <defs>
+      <filter id="filter" x="0" y="0">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="0" />
+      </filter>
+    </defs>
+    <image id="img" xlink:href="./images/Stanford_Bunny.png" x="0" y="0" width="800px" height="800px" filter="url(#filter)"></image>
+    </svg>
+  </div>
 </div>
 
+<script src='http://d3js.org/d3.v3.min.js' charset='utf-8'></script>
 <script src="scripts/animated_blur.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {

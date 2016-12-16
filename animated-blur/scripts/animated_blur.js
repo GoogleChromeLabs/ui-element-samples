@@ -51,7 +51,7 @@ function initializeAnimatedBlur(clip) {
     for (var i = 0; i < container.childElementCount; ++i) {
       var svg = inOrOut > 0 ? container.children[i]
           : container.children[container.childElementCount - i - 1];
-      svg.style.animation = 'b' + (i + 1) + '-anim 2s alternate linear';
+      svg.style.animation = 'b' + (i + 1) + '-anim 2s forwards linear';
     }
   }
 
@@ -81,21 +81,71 @@ function initializeAnimatedBlur(clip) {
     return null;
   }
 
-  document.getElementById("container").onclick = function() {
-    if (!container.classList.contains('animated')) {
-      //container.classList.add('animated');
-      if (!animatedBlur) {
-        var object = document.getElementById('blur');
-        cloneObject(container, object, 3);
-        updateObject(container);
-        inOrOut = 1;
-        animatedBlur = true;
-      }
-    } else {
-      //container.classList.remove('animated');
+  function displayToolTips(inOrOut) {
+    if (inOrOut == -1 ) {
+      d3.select('#viewport').selectAll('#toolTip').remove();
+      return;
     }
-    inOrOut *= -1;
+    var margin = {top: 20, right: 10, bottom: 20, left: 10};
+    var width = d3.select('#viewport').node().getBoundingClientRect().width - margin.left - margin.right;
+    var height = d3.select('#viewport').node().getBoundingClientRect().height - margin.top - margin.bottom;
+    var svg = d3.select('#viewport')
+        .append('svg')
+        .attr({
+          'id': 'toolTip',
+          'width': width + margin.left + margin.right,
+          'height': height + margin.top + margin.bottom
+          })
+        .append('g')
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    var foWidth = 300;
+    var anchor = {'w': width/2, 'h': height/2};
+    var t = 50, k = 15;
+    var tip = {'w': (3/4 * t), 'h': k};
+    var fo = svg.append('foreignObject')
+        .attr({
+          'x': anchor.w - tip.w,
+          'y': anchor.h + tip.h,
+          'width': foWidth,
+          'class': 'svg-tooltip'
+          });
+    var div = fo.append('xhtml:div')
+        .append('div')
+        .attr({
+          'class': 'tooltip'
+          });
+    div.append('p')
+        .attr('class', 'lead')
+        .html('Stanford bunny.');
+    div.append('p')
+        .html('The Stanford bunny is a computer graphics 3D test model developed by Greg Turk and Marc Levoy in 1994 at Stanford University. The bunny consists of data describing 69,451 triangles determined by 3D scanning a ceramic figurine of a rabbit. This model and others were scanned to test methods of range scanning physical objects.');
+    var foHeight = div[0][0].getBoundingClientRect().height;
+    fo.attr({
+      'height': foHeight
+      });
+    svg.insert('polygon', '.svg-tooltip')
+    .attr({
+      'points': "0,0 0," + foHeight + " " + foWidth + "," + foHeight + " " + foWidth + ",0 " + (t) + ",0 " + tip.w + "," + (-tip.h) + " " + (t/2) + ",0",
+      'height': foHeight + tip.h,
+      'width': foWidth,
+      'fill': '#D8D8D8', 
+      'opacity': 0.75,
+      'transform': 'translate(' + (anchor.w - tip.w) + ',' + (anchor.h + tip.h) + ')'
+      });
+  }
+
+  document.getElementById("container").onclick = function() {
+    if (!animatedBlur) {
+      var object = document.getElementById('blur');
+      cloneObject(container, object, 3);
+      updateObject(container);
+      inOrOut = 1;
+      animatedBlur = true;
+    } else {
+      inOrOut *= -1;
+    }
     blurInOrOut(container, inOrOut);
+    displayToolTips(inOrOut);
   }
 
 }
