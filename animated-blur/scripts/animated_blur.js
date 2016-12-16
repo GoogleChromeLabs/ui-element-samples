@@ -22,13 +22,6 @@ function initializeAnimatedBlur(clip) {
   var inOrOut = 0;
   var num = 4;
 
-  function cloneObject(container, obj, num) {
-    while (num--) {
-      var cln = obj.cloneNode(true);
-      container.appendChild(cln);
-    }
-  }
-
   function addKeyFrames(name, id) {
     var keyframes = '@keyframes ' + name + ' {';
     for (var i = 0; i <= num; ++i) {
@@ -54,32 +47,6 @@ function initializeAnimatedBlur(clip) {
           : d3.select('#b' + (num - i)).node();
       svg.style.animation = 'b' + (i + 1) + '-anim 2s forwards linear';
     }
-  }
-
-  function updateObject(container) {
-    for (var i = 0; i < container.childElementCount; ++i) {
-      addKeyFrames('b' + (i + 1) + '-anim', i);
-      var svg = container.children[i];
-      svg.id = 'b' + (i + 1);
-      var filter = svg.querySelector('#filter');
-      filter.id = 'f' + (i + 1);
-      filter.firstElementChild.setAttribute('stdDeviation', 4 * i);
-      var img = svg.querySelector('#img');
-      img.setAttribute('filter', 'url(#' + filter.id + ')');
-    }
-  }
-
-  function findKeyframesRule(rule) {
-    var ss = document.styleSheets;
-    for (var i = 0; i < ss.length; ++i) {
-      for (var j = 0; j < ss[i].cssRules.length; ++j) {
-        if (ss[i].cssRules[j].type == window.CSSRule.WEBKIT_KEYFRAMES_RULE
-            && ss[i].cssRules[j].name == rule) {
-          return ss[i].cssRules[j];
-        }
-      }
-    }
-    return null;
   }
 
   function displayToolTips(inOrOut) {
