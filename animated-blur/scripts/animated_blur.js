@@ -17,9 +17,10 @@
 
 function initializeAnimatedBlur(clip) {
 
-  var container = document.getElementById('container');
+  var container = document.getElementById('animated-blur');
   var animatedBlur = false;
   var inOrOut = 0;
+  var num = 4;
 
   function cloneObject(container, obj, num) {
     while (num--) {
@@ -28,7 +29,7 @@ function initializeAnimatedBlur(clip) {
     }
   }
 
-  function addKeyFrames(name, id, num) {
+  function addKeyFrames(name, id) {
     var keyframes = '@keyframes ' + name + ' {';
     for (var i = 0; i <= num; ++i) {
       var opacity = (i == id || i == id + 1) ? 1 : 0;
@@ -48,16 +49,16 @@ function initializeAnimatedBlur(clip) {
   function blurInOrOut(container, inOrOut) {
     if (!inOrOut) return;
 
-    for (var i = 0; i < container.childElementCount; ++i) {
-      var svg = inOrOut > 0 ? container.children[i]
-          : container.children[container.childElementCount - i - 1];
+    for (var i = 0; i < num; ++i) {
+      var svg = inOrOut > 0 ? d3.select('#b' + (i + 1)).node()
+          : d3.select('#b' + (num - i)).node();
       svg.style.animation = 'b' + (i + 1) + '-anim 2s forwards linear';
     }
   }
 
   function updateObject(container) {
     for (var i = 0; i < container.childElementCount; ++i) {
-      addKeyFrames('b' + (i + 1) + '-anim', i, container.childElementCount);
+      addKeyFrames('b' + (i + 1) + '-anim', i);
       var svg = container.children[i];
       svg.id = 'b' + (i + 1);
       var filter = svg.querySelector('#filter');
@@ -116,9 +117,9 @@ function initializeAnimatedBlur(clip) {
           });
     div.append('p')
         .attr('class', 'lead')
-        .html('Stanford bunny.');
+        .html(d3.select('img').node().alt)
     div.append('p')
-        .html('The Stanford bunny is a computer graphics 3D test model developed by Greg Turk and Marc Levoy in 1994 at Stanford University. The bunny consists of data describing 69,451 triangles determined by 3D scanning a ceramic figurine of a rabbit. This model and others were scanned to test methods of range scanning physical objects.');
+          .html(d3.select('#desc').node().innerText)
     var foHeight = div[0][0].getBoundingClientRect().height;
     fo.attr({
       'height': foHeight
@@ -134,11 +135,45 @@ function initializeAnimatedBlur(clip) {
       });
   }
 
-  document.getElementById("container").onclick = function() {
+  function createObjects(num) {
+    var img = d3.select('img').node();
+    for (var i = 0; i < num; ++i) { 
+      var svg = d3.select('#animated-blur')
+            .append('svg')
+            .attr({
+              'id': 'b' + (i + 1),
+              'width': img.width,
+              'height': img.height 
+              });
+      svg.append('defs')
+            .append('filter')
+            .attr({
+              'id': 'f' + (i + 1),
+              'x': 0,
+              'y': 0
+              })
+            .append('feGaussianBlur')
+            .attr({
+              'in': 'SourceGraphic',
+              'stdDeviation': 4 * i
+              });
+      svg.append('image')
+          .attr({
+            'id': 'img',
+            'xlink:href': img.currentSrc,
+            'x': 0,
+            'y': 0,
+            'width': img.width,
+            'height': img.height,
+            'filter': 'url(#f' + (i + 1) + ')'
+          });
+      addKeyFrames('b' + (i + 1) + '-anim', i);
+    }
+  }
+
+  document.getElementById("animated-blur").onclick = function() {
     if (!animatedBlur) {
-      var object = document.getElementById('blur');
-      cloneObject(container, object, 3);
-      updateObject(container);
+      createObjects(num);
       inOrOut = 1;
       animatedBlur = true;
     } else {
