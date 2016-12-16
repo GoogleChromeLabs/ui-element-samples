@@ -30,7 +30,6 @@ const app = express();
 app.use('/node_modules', express.static('node_modules'));
 // Matches paths like `/`, `/index.html`, `/about/` or `/about/index.html`.
 const toplevelSection = /([^/]*)(\/|\/index.html)$/;
-app.use('/node_modules', express.static('node_modules'));
 app.get(toplevelSection, (req, res) => {
   // Extract the menu item name from the path and attach it to
   // the request to have it available for template rendering.

@@ -43,7 +43,7 @@ let timingFunctionCollapse = function (t) {
   return 0.5 * ((t -= 2) * t * t * t * t + 2);
 };
 
-item.addEventListener('click', () => {
+headerImage.addEventListener('click', () => {
 
   // Only expand if the item is collapsed.
   if (item.classList.contains('last'))
@@ -80,6 +80,18 @@ item.addEventListener('click', () => {
   // Play it forwards.
   flipGroup.play();
 
+
+
+  // The event to capture at the end of the animation
+  let onFlipComplete = () => {
+    itemList.removeEventListener('flipComplete', onFlipComplete);
+    // Make the list scrollable
+    itemList.style.overflow = 'auto';
+  }
+
+  // When the image has finished FLIPing, remove the class from the item itself.
+  itemList.addEventListener('flipComplete', onFlipComplete);
+
 });
 
 close.addEventListener('click', () => {
@@ -113,16 +125,12 @@ close.addEventListener('click', () => {
   // Move and fade the element back to the expanded position.
   flipGroup.invert();
 
+  // Because this paints while animating
+  itemList.style.overflow = '';
+
   // Play it.
   flipGroup.play();
 
-  // The event to capture at the end of the animation
-  let onFlipComplete = () => {
-    headerImage.removeEventListener('flipComplete', onFlipComplete);
-    item.classList.remove('last');
-  }
-
-  // When the image has finished FLIPing, remove the class from the item itself.
-  headerImage.addEventListener('flipComplete', onFlipComplete);
-
+  // Remove the 'last' class
+  item.classList.remove('last');
 });
