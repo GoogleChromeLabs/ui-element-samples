@@ -47,7 +47,7 @@ function goOffline() {
     caches.match(linkUrl.toString())
       .then(resp => link.classList.toggle('cached', !!resp));
   });
-};
+}
 window.addEventListener('offline', _ => goOffline());
 window.addEventListener('online', _ => document.body.classList.remove('offline'));
 navigator.onLine || goOffline();

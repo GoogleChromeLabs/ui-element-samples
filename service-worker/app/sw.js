@@ -1,4 +1,4 @@
-// Load our templateing engine
+// Load our templating engine
 importScripts('/node_modules/dot/doT.min.js');
 doT.templateSettings.strip = false;
 
@@ -34,15 +34,17 @@ self.onfetch = event => {
   // Parse the request URL so we can separate domain, path and query.
   event.parsedUrl = new URL(event.request.url);
 
+  const matches = toplevelSection.exec(event.parsedUrl.pathname);
   // If this regexp matches, build a response
-  if (toplevelSection.test(event.parsedUrl.pathname)) {
+  if (matches) {
+    event.request.item = matches[1];
     return buildSite(event);
   // If it’s a request for /static/, just go to cache
   } else if (event.parsedUrl.pathname.startsWith('/static/')) {
     event.respondWith(caches.match(event.request));
     return;
   }
-  // Otherwise, use our dynamic caching startegy
+  // Otherwise, use our dynamic caching strategy
   staleWhileRevalidate(event);
 };
 
@@ -61,7 +63,7 @@ function buildSite(event) {
   }));
 
   event.respondWith(async function () {
-    // Get our 3 fragements for the response. Header, content and footer.
+    // Get our 3 fragments for the response. Header, content and footer.
     const files = await Promise.all([
       !isPartial ? caches.match('/header.partial.html') : new Response(null),
       staleWhileRevalidateWrapper(event.parsedUrl.toString(), myWaitUntil),
@@ -69,10 +71,10 @@ function buildSite(event) {
     ]);
     // All of those are Response objects. Grab the file contents as strings.
     const contents = await Promise.all(files.map(f => f.text()));
-    // ... and contantenate them.
+    // ... and concatenate them.
     const content = contents.join('');
     // Compile the template
-    const template = doT.template(content)
+    const template = doT.template(content);
     // ... and execute the template as the body of the response
     return new Response(template(event.request), {headers: {'Content-Type': 'text/html'}});
   }());
@@ -95,7 +97,7 @@ function staleWhileRevalidateWrapper(request, waitUntil) {
 // in the background.
 function staleWhileRevalidate(event) {
   const fetchedVersion = fetch(event.request);
-  // Since we _might_ be responsing with the fetched response
+  // Since we _might_ be responding with the fetched response
   // and also using it to populate the cache, we need to make a copy.
   const fetchedCopy = fetchedVersion.then(response => response.clone());
   const cachedVersion = caches.match(event.request);

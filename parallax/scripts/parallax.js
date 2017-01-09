@@ -74,7 +74,6 @@ function initializeParallax(clip) {
 
     parallaxDetails.push({'node': parallax[i],
                           'top': parallax[i].offsetTop,
-                          'height': parallax[i].offsetHeight,
                           'sticky': !!sticky,
                           'nextCover': nextCover,
                           'previousCover': previousCover});
@@ -92,7 +91,10 @@ function initializeParallax(clip) {
       var threshold = 200;
       var visible = parallaxStart - threshold - clip.clientHeight < clip.scrollTop &&
                     parallaxEnd + threshold > clip.scrollTop;
-      var display = visible ? 'block' : 'none'
+      // FIXME: Repainting the images while scrolling can cause jank.
+      // For now, keep them all.
+      // var display = visible ? 'block' : 'none'
+      var display = 'block';
       if (parallaxDetails[i].node.style.display != display)
         parallaxDetails[i].node.style.display = display;
     }
@@ -116,12 +118,13 @@ function onResize(details) {
     var parallaxStart = previousCover ? (previousCover.offsetTop + previousCover.offsetHeight) : 0;
     var scrollbarWidth = details[i].sticky ? 0 : clip.offsetWidth - clip.clientWidth;
     var parallaxElem = details[i].sticky ? container : clip;
+    var height = details[i].node.offsetHeight;
     var depth = 0;
     if (rate) {
       depth = 1 - (1 / rate);
     } else {
       var parallaxEnd = nextCover ? nextCover.offsetTop : container.offsetHeight;
-      depth = (details[i].height - parallaxEnd + parallaxStart) / (details[i].height - clip.clientHeight);
+      depth = (height - parallaxEnd + parallaxStart) / (height - clip.clientHeight);
     }
     if (details[i].sticky)
       depth = 1.0 / depth;
@@ -132,8 +135,8 @@ function onResize(details) {
     var dx = scrollbarWidth * (scale - 1);
     // Offset for the position within the container.
     var dy = details[i].sticky ?
-        -(clip.scrollHeight - parallaxStart - details[i].height) * (1 - scale) :
-        (parallaxStart - depth * (details[i].height - clip.clientHeight)) * scale;
+        -(clip.scrollHeight - parallaxStart - height) * (1 - scale) :
+        (parallaxStart - depth * (height - clip.clientHeight)) * scale;
 
     details[i].node.style.transform = 'scale(' + (1 - depth) + ') translate3d(' + dx + 'px, ' + dy + 'px, ' + depth + 'px)';
   }

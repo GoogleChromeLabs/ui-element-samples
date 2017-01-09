@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!--
 
 Copyright 2016 Google Inc. All rights reserved.
@@ -15,19 +16,43 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 -->
-<!DOCTYPE html>
 <html>
 <head>
-<link href='https://fonts.googleapis.com/css?family=Fugaz+One' rel='stylesheet' type='text/css'>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css?family=Sahitya|Share+Tech+Mono|Yanone+Kaffeesatz" rel="stylesheet">
 <style>
 html, body {
   height: 100%;
   margin: 0;
   overflow: hidden;
+  font-family: "Yanone Kaffeesatz";
+  color: white;
+  font-size: 18px;
+  letter-spacing: 1.5px;
+  line-height: 1.5em;
+}
+* {
+  box-sizing: border-box;
 }
 
+h1, h2 {
+  font-family: "Sahitya";
+  text-shadow: 0 0 4px white, 3px 3px 1px black;
+  line-height: 1.2em;
+}
+h1 {
+  font-size: 4em;
+}
+h2 {
+  font-size: 2.5em;
+}
+code, pre {
+  font-family: "Share Tech Mono";
+  font-size: 0.8em;
+}
 .scene {
   height: 150vh;
+  padding: 5vh 10vw;
 }
 
 .parallax {
@@ -42,16 +67,15 @@ html, body {
 }
 
 .header {
-  height: 40vh;
+  height: 70vh;
 }
 .parallax.header {
-  margin-bottom: -40vh;
+  margin-bottom: -70vh;
 }
 
 p {
-  font-family: 'Fugaz One', cursive;
   color: white;
-  margin: 0;
+  margin: 1em 0;
   z-index: 1;
   position: relative;
 }
@@ -63,11 +87,40 @@ p {
   position: relative;
   -webkit-overflow-scrolling: touch;
 }
-
-.black {
-  background-color: black;
+.woods:not(.header),
+.sunset:not(.header) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.sunset:not(.header) {
+  align-items: flex-end;
+}
+.solid {
   z-index: 1;
   position: relative;
+  height: 70vh;
+  font-size: 1.5em;
+  line-height: 1.5em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.solid.star {
+  background-image: linear-gradient(hsla(240, 90%, 8%, 1) 0%, 99%, hsla(217,24%,71%,0) 100%);
+  box-shadow: -10px -10px 20px hsl(240, 90%, 8%);
+}
+.solid.woods {
+  background-color: hsl(195, 16%, 49%);
+  box-shadow: -10px -10px 20px hsl(195, 16%, 49%);
+}
+a, a:link, a:active, a:hover, a:visited {
+  color: hsl(240, 100%, 90%);
+  display: flex;
+  align-items: flex-end;
 }
 
 </style>
@@ -82,37 +135,42 @@ p {
     <div class="viewport">
     <div>
       <!-- Specifying a parallax rate of 0.3 will slide the image at that proportion of the scroll speed. -->
-      <div class="parallax header" style="background-image: url('images/header-park.jpg');" parallax="0.3"></div>
+      <div class="parallax header" style="background-image: url('images/stars.jpg');" parallax="0.3"></div>
       <div class="scene header">
-        <p>
-          Bacon ipsum dolor amet ham pastrami tri-tip, ham hock cupim t-bone chicken kevin ribeye beef brisket filet mignon leberkas pig. Drumstick kielbasa filet mignon picanha bresaola chuck tail swine porchetta hamburger salami alcatra beef ribs. Prosciutto meatloaf chuck, tri-tip kevin salami beef jowl sausage tail flank. Fatback pork belly swine spare ribs short ribs bresaola turducken beef jowl jerky pig.
-        </p>
+        <h1>Gazing into the stars&nbsp;&nbsp;🐱</h1>
+        <h2>When cats use <code>requestIdleCallback</code></h2>
       </div>
-      <div class="scene black">
+      <div class="scene solid star">
         <p>
-          Shank turkey rump short loin sausage. Short ribs beef ribs pastrami capicola cupim t-bone. Short ribs kevin ball tip picanha beef ribs biltong tail, pork turkey landjaeger rump. Boudin hamburger bacon ham hock beef ribs ribeye prosciutto fatback chicken meatloaf flank ground round pancetta kielbasa. Short ribs meatloaf t-bone pig shank. Porchetta pork loin tongue tri-tip landjaeger cow, bacon t-bone flank sirloin drumstick turducken venison.
+          What’s this? This is a parallax scroller. But not just yet another parallax scroller, it’s one that doesn’t rely on JavaScript for the animation, that works on both desktop and mobile and has 60fps while scrolling. This was a lot harder than we originally anticipated, so we wrote up what we did for you to read!
+        </p>
+        <p>
+          <a href="https://developers.google.com/web/updates/2016/12/performant-parallaxing">
+          <img src="images/screengrab.jpg" style="width: 10vw; float: left; margin-right: 2vw;">
+          Read the article on developers.google.com!</a>
         </p>
       </div>
       <!-- When a rate isn't specified, it will be calculated such that the image always fills the space between the
            element before it and the next element with the "parallax-cover" attribute. -->
-      <div class="parallax" style="background-image: url('images/droid.jpg');" parallax></div>
-      <div class="scene">
-        <p>
-          Shank turkey rump short loin sausage. Short ribs beef ribs pastrami capicola cupim t-bone. Short ribs kevin ball tip picanha beef ribs biltong tail, pork turkey landjaeger rump. Boudin hamburger bacon ham hock beef ribs ribeye prosciutto fatback chicken meatloaf flank ground round pancetta kielbasa. Short ribs meatloaf t-bone pig shank. Porchetta pork loin tongue tri-tip landjaeger cow, bacon t-bone flank sirloin drumstick turducken venison.
-        </p>
+      <div class="parallax" style="background-image: url('images/sea.jpg');" parallax></div>
+      <div class="scene woods">
+        <h1>Gazing into the sea&nbsp;&nbsp;🐳</h1>
+        <h2>Some people don’t have <code>class</code></h2>
       </div>
-      <div class="scene black" parallax-cover>
+      <div class="scene solid woods" parallax-cover>
         <p>
-          Shank turkey rump short loin sausage. Short ribs beef ribs pastrami capicola cupim t-bone. Short ribs kevin ball tip picanha beef ribs biltong tail, pork turkey landjaeger rump. Boudin hamburger bacon ham hock beef ribs ribeye prosciutto fatback chicken meatloaf flank ground round pancetta kielbasa. Short ribs meatloaf t-bone pig shank. Porchetta pork loin tongue tri-tip landjaeger cow, bacon t-bone flank sirloin drumstick turducken venison.
+          Lorem ipsum dolor sit amet, et natum mucius quo, nam zril offendit ei. Cu mea amet paulo consequat. Eam nonumy integre malorum ei. Fabulas feugait detracto cu usu. Ad brute moderatius sit, ne mel ullum saperet.
+        </p>
+        <p>
+          Inermis petentium cotidieque sed cu. No duo alienum salutandi. Exerci evertitur vix ea, mei audire conclusionemque an. His nisl graece euismod ad.
         </p>
       </div>
       <!-- When a rate isn't specified and there is no subsequent element with the "parallax-cover" attribute the rate
            will be calculated such that the image slides until the end of the scrollable content. -->
-      <div class="parallax" style="background-image: url('images/desk.jpg');" parallax></div>
-      <div class="scene">
-        <p>
-          Bacon ipsum dolor amet ham pastrami tri-tip, ham hock cupim t-bone chicken kevin ribeye beef brisket filet mignon leberkas pig. Drumstick kielbasa filet mignon picanha bresaola chuck tail swine porchetta hamburger salami alcatra beef ribs. Prosciutto meatloaf chuck, tri-tip kevin salami beef jowl sausage tail flank. Fatback pork belly swine spare ribs short ribs bresaola turducken beef jowl jerky pig.
-        </p>
+      <div class="parallax" style="background-image: url('images/sunset.jpg');" parallax></div>
+      <div class="scene sunset">
+        <h1>Gazing into the sunset&nbsp;&nbsp;🌞</h1>
+        <h2><code>!important</code> is not a performance primitive</h2>
       </div>
     </div>
   </div>

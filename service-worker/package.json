@@ -11,6 +11,6 @@
   },
   "devDependencies": {},
   "scripts": {
-    "chrome": "rm -rf /tmp/foo && open -a 'Google Chrome Canary' -n --args --user-data-dir=/tmp/foo --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:8081"
+    "chrome": "rm -rf /tmp/foo && open -a 'Google Chrome Canary' -n --args --user-data-dir=/tmp/foo --ignore-certificate-errors --unsafely-treat-insecure-origin-as-secure=https://localhost:8081 https://localhost:8081/"
   }
 }
