@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  *
  */
 
-function initializeAnimatedBlur(clip) {
+var svgns = "http://www.w3.org/2000/svg";
+var xhtmlns = "http://www.w3.org/1999/xhtml";
 
+function initializeAnimatedBlur(clip) {
   var container = document.getElementById('animated-blur');
   var animatedBlur = false;
   var inOrOut = 0;
@@ -39,115 +41,111 @@ function initializeAnimatedBlur(clip) {
     }
   }
 
-  function blurInOrOut(container, inOrOut) {
+  function blurInOrOut(e, container, inOrOut) {
     if (!inOrOut) return;
 
     for (var i = 0; i < num; ++i) {
-      var svg = inOrOut > 0 ? d3.select('#b' + (i + 1)).node()
-          : d3.select('#b' + (num - i)).node();
+      var svg = inOrOut > 0 ? e.currentTarget.querySelector('#b' + (i + 1))
+          : e.currentTarget.querySelector('#b' + (num - i));
       svg.style.animation = 'b' + (i + 1) + '-anim 2s forwards linear';
     }
   }
 
-  function displayToolTips(inOrOut) {
+  function displayToolTips(e, inOrOut) {
     if (inOrOut == -1 ) {
-      d3.select('#viewport').selectAll('#toolTip').remove();
+      document.querySelector('#toolTip').remove();
       return;
     }
-    var margin = {top: 20, right: 10, bottom: 20, left: 10};
-    var width = d3.select('#viewport').node().getBoundingClientRect().width - margin.left - margin.right;
-    var height = d3.select('#viewport').node().getBoundingClientRect().height - margin.top - margin.bottom;
-    var svg = d3.select('#viewport')
-        .append('svg')
-        .attr({
-          'id': 'toolTip',
-          'width': width + margin.left + margin.right,
-          'height': height + margin.top + margin.bottom
-          })
-        .append('g')
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+    var width =
+        document.querySelector('#viewport').getBoundingClientRect().width;
+    var height =
+        document.querySelector('#viewport').getBoundingClientRect().height;
+    var svg = document.createElementNS(svgns, 'svg');
+    svg.id = 'toolTip';
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', height);
+    document.querySelector('#viewport').appendChild(svg);
+
+    var g = document.createElementNS(svgns, 'g');
+    svg.appendChild(g);
     var foWidth = 300;
-    var anchor = {'w': width/2, 'h': height/2};
+    var anchor = {'w': e.clientX, 'h': e.clientY};
     var t = 50, k = 15;
     var tip = {'w': (3/4 * t), 'h': k};
-    var fo = svg.append('foreignObject')
-        .attr({
-          'x': anchor.w - tip.w,
-          'y': anchor.h + tip.h,
-          'width': foWidth,
-          'class': 'svg-tooltip'
-          });
-    var div = fo.append('xhtml:div')
-        .append('div')
-        .attr({
-          'class': 'tooltip'
-          });
-    div.append('p')
-        .attr('class', 'lead')
-        .html(d3.select('img').node().alt)
-    div.append('p')
-          .html(d3.select('#desc').node().innerText)
-    var foHeight = div[0][0].getBoundingClientRect().height;
-    fo.attr({
-      'height': foHeight
-      });
-    svg.insert('polygon', '.svg-tooltip')
-    .attr({
-      'points': "0,0 0," + foHeight + " " + foWidth + "," + foHeight + " " + foWidth + ",0 " + (t) + ",0 " + tip.w + "," + (-tip.h) + " " + (t/2) + ",0",
-      'height': foHeight + tip.h,
-      'width': foWidth,
-      'fill': '#D8D8D8', 
-      'opacity': 0.75,
-      'transform': 'translate(' + (anchor.w - tip.w) + ',' + (anchor.h + tip.h) + ')'
-      });
+    var fo = document.createElementNS(svgns, 'foreignObject');
+    fo.setAttribute('x', anchor.w - tip.w);
+    fo.setAttribute('y', anchor.h + tip.h);
+    fo.setAttribute('width', foWidth);
+    fo.setAttribute('class', 'svg-tooltip');
+    g.appendChild(fo);
+    var div = document.createElementNS(xhtmlns, 'div');
+    div.setAttribute('class', 'tooltip');
+    fo.appendChild(div);
+    var p = document.createElementNS(xhtmlns, 'p');
+    p.setAttribute('class', 'lead');
+    p.innerHTML = e.currentTarget.querySelector('img').alt;
+    div.appendChild(p);
+    p = document.createElementNS(xhtmlns, 'p');
+    p.innerHTML = e.currentTarget.querySelector('#desc').innerText;
+    div.appendChild(p);
+    var foHeight = div.getBoundingClientRect().height;
+    fo.setAttribute('height', foHeight);
+    var polygon = document.createElementNS(svgns, 'polygon');
+    polygon.setAttribute('points', "0,0 0," + foHeight + " " + foWidth + "," +
+        foHeight + " " + foWidth + ",0 " + (t) + ",0 " + tip.w + "," + (-tip.h)
+        + " " + (t/2) + ",0");
+    polygon.setAttribute('height', foHeight + tip.h);
+    polygon.style.height = foHeight + tip.h;
+    polygon.setAttribute('width', foWidth);
+    polygon.setAttribute('fill', '#D8D8D8');
+    polygon.setAttribute('opacity', 0.75);
+    polygon.setAttribute('transform', 'translate(' + (anchor.w - tip.w) + ',' +
+          (anchor.h + tip.h) + ')');
+    g.insertBefore(polygon, fo);
   }
 
-  function createObjects(num) {
-    var img = d3.select('img').node();
-    for (var i = 0; i < num; ++i) { 
-      var svg = d3.select('#animated-blur')
-            .append('svg')
-            .attr({
-              'id': 'b' + (i + 1),
-              'width': img.width,
-              'height': img.height 
-              });
-      svg.append('defs')
-            .append('filter')
-            .attr({
-              'id': 'f' + (i + 1),
-              'x': 0,
-              'y': 0
-              })
-            .append('feGaussianBlur')
-            .attr({
-              'in': 'SourceGraphic',
-              'stdDeviation': 4 * i
-              });
-      svg.append('image')
-          .attr({
-            'id': 'img',
-            'xlink:href': img.currentSrc,
-            'x': 0,
-            'y': 0,
-            'width': img.width,
-            'height': img.height,
-            'filter': 'url(#f' + (i + 1) + ')'
-          });
+  function createObjects(e, num) {
+    var img = e.currentTarget.querySelector('img');
+    for (var i = 0; i < num; ++i) {
+      var svg = document.createElementNS(svgns, 'svg');
+      svg.id = 'b' + (i + 1);
+      svg.setAttribute('width', img.width);
+      svg.setAttribute('height', img.height);
+      e.currentTarget.appendChild(svg);
+      var defs = document.createElementNS(svgns, 'defs');
+      svg.appendChild(defs);
+      var filter = document.createElementNS(svgns, 'filter');
+      filter.id = 'f' + (i + 1);
+      filter.setAttribute('x', 0);
+      filter.setAttribute('y', 0);
+      defs.append(filter)
+      var feGaussianBlur = document.createElementNS(svgns, 'feGaussianBlur');
+      feGaussianBlur.setAttribute('in', 'SourceGraphic');
+      feGaussianBlur.setAttribute('stdDeviation', 4 * i);
+      filter.append(feGaussianBlur);
+      var image = document.createElementNS(svgns, 'image');
+      image.id = 'img';
+      image.setAttribute('href', img.currentSrc);
+      image.setAttribute('x', 0);
+      image.setAttribute('y', 0);
+      image.setAttribute('width', img.width);
+      image.setAttribute('height', img.height);
+      image.setAttribute('filter', 'url(#f' + (i + 1) + ')');
+      svg.append(image);
       addKeyFrames('b' + (i + 1) + '-anim', i);
     }
   }
 
-  document.getElementById("animated-blur").onclick = function() {
+  document.getElementById("viewport").onclick = function(e) {
     if (!animatedBlur) {
-      createObjects(num);
+      createObjects(e, num);
       inOrOut = 1;
       animatedBlur = true;
     } else {
       inOrOut *= -1;
     }
-    blurInOrOut(container, inOrOut);
-    displayToolTips(inOrOut);
+    blurInOrOut(e, container, inOrOut);
+    displayToolTips(e, inOrOut);
   }
 
 }

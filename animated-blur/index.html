@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<!-- DO NOT SUBMIT: Fix Page Title. Missing tags? http://go/optional-html -->
 <title>Animated Blur</title>
 
 <style>
@@ -10,8 +9,6 @@ body {
 }
 
 .viewport {
-  width: 800px;
-  height: 600px;
   position: relative;
   background: green;
 }
@@ -47,11 +44,25 @@ polygon {
   <div id="animated-blur">
     <img src="./images/Stanford_Bunny.png" alt="Stanford Bunny" width="800"
       height="800">
-    <div id="desc">The Stanford bunny is a computer graphics 3D test model developed by Greg Turk and Marc Levoy in 1994 at Stanford University. The bunny consists of data describing 69,451 triangles determined by 3D scanning a ceramic figurine of a rabbit. This model and others were scanned to test methods of range scanning physical objects.</div>
+    <div id="desc">The Stanford bunny is a computer graphics 3D test
+      model developed by Greg Turk and Marc Levoy in 1994 at Stanford
+      University. The bunny consists of data describing 69,451
+      triangles determined by 3D scanning a ceramic figurine of a
+      rabbit. This model and others were scanned to test methods of
+      range scanning physical objects.</div>
   </div>
+<!--
+  <div id="animated-blur">
+    <img src="./images/Google.png" alt="Google" width="600"
+      height="600">
+    <div id="desc">Google is an American multinational technology
+      company specializing in Internet-related services and products
+      that include online advertising technologies, search, cloud
+      computing, software, and hardware.</div>
+  </div>
+-->
 </div>
 
-<script src='http://d3js.org/d3.v3.min.js' charset='utf-8'></script>
 <script src="scripts/animated_blur.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
