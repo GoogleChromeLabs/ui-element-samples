@@ -23,6 +23,9 @@ function initializeAnimatedBlur(clip) {
   var animatedBlur = false;
   var inOrOut = 0;
   var num = 4;
+  var blurURL = "";
+
+  cloneElement(clip);
 
   function addKeyFrames(name, id) {
     var keyframes = '@keyframes ' + name + ' {';
@@ -125,7 +128,7 @@ function initializeAnimatedBlur(clip) {
       filter.append(feGaussianBlur);
       var image = document.createElementNS(svgns, 'image');
       image.id = 'img';
-      image.setAttribute('href', img.currentSrc);
+      image.setAttribute('src', blurURL);//img.currentSrc);
       image.setAttribute('x', 0);
       image.setAttribute('y', 0);
       image.setAttribute('width', img.width);
@@ -134,6 +137,54 @@ function initializeAnimatedBlur(clip) {
       svg.append(image);
       addKeyFrames('b' + (i + 1) + '-anim', i);
     }
+  }
+
+  function cloneElement(element) {
+    var svg = document.createElementNS(svgns, 'svg');
+    svg.setAttribute('xmlns', svgns);
+    svg.setAttribute('width', 200);
+    svg.setAttribute('height', 200);
+    var fo = document.createElementNS(svgns, 'foreignObject');
+    fo.id = 'cloned-element';
+    fo.setAttribute('width', '100%');
+    fo.setAttribute('height', '100%');
+    svg.appendChild(fo);
+
+    var clonedElement = document.createElement('img');
+    clonedElement.setAttribute('xmlns', xhtmlns);
+    clonedElement.src = 'http://www.w3schools.com/css/trolltunga.jpg';
+    clonedElement.innerHTML = 'fdsdfsdfdsfsdfdsfsfsdf';
+    //var clonedElement = element.cloneNode(true);
+    fo.appendChild(clonedElement);
+
+    paintElementToCanvas(svg);
+  }
+
+  function paintElementToCanvas(data) {
+    var canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    var ctx = canvas.getContext('2d');
+
+    var DOMURL = window.URL || window.webkitURL || window;
+    data = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">' +
+           '<foreignObject width="100%" height="100%">' +
+           '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">' +
+             'like ' +
+             'cheese' +
+           '</div>' +
+           '</foreignObject>' +
+           '</svg>';
+    var img = new Image();
+    var svg = new Blob([data], {type: 'image/svg+xml'});
+    var url = DOMURL.createObjectURL(svg);
+
+    img.onload = function () {
+      ctx.drawImage(img, 0, 0);
+      DOMURL.revokeObjectURL(url);
+    }
+
+    img.src = url;
+    blurURL = canvas.toDataURL('image/svg+xml');
   }
 
   document.getElementById("viewport").onclick = function(e) {

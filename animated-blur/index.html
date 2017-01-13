@@ -1,7 +1,19 @@
+<!--
+Copyright 2017 Google Inc. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 <!DOCTYPE html>
-<meta charset="utf-8">
+<html>
+<head>
 <title>Animated Blur</title>
-
 <style>
 
 body {
@@ -10,12 +22,11 @@ body {
 
 .viewport {
   position: relative;
-  background: green;
 }
 
 svg {
   position: absolute;
-  top: 5px;
+  top: 0px;
   display: block;
   margin: 0 auto;
 }
@@ -39,10 +50,18 @@ polygon {
 }
 
 </style>
+<script src="scripts/animated_blur.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    initializeAnimatedBlur(document.querySelector('.viewport'));
+  });
+</script>
+</head>
 
+<body>
 <div id ="viewport" class="viewport">
   <div id="animated-blur">
-    <img src="./images/Stanford_Bunny.png" alt="Stanford Bunny" width="800"
+    <img id="img" src="./images/Stanford_Bunny.png" style="visibility:hidden" alt="Stanford Bunny" width="800"
       height="800">
     <div id="desc">The Stanford bunny is a computer graphics 3D test
       model developed by Greg Turk and Marc Levoy in 1994 at Stanford
@@ -62,11 +81,6 @@ polygon {
   </div>
 -->
 </div>
-
-<script src="scripts/animated_blur.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    initializeAnimatedBlur(document.querySelector('.viewport'));
-  });
-</script>
+</body>
+</html>
 
