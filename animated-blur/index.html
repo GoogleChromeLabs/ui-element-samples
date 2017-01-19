@@ -17,7 +17,8 @@ limitations under the License.
 <style>
 
 body {
-  background: green;
+  margin: 0;
+  padding: 0;
 }
 
 .viewport {
@@ -34,13 +35,12 @@ svg {
 .svg-tooltip {
   pointer-events: none;
 }
+
 .tooltip {
   padding: 10px;
   color: blue;
 }
-p {
-  margin: 5px 0px;
-}
+
 polygon {
   pointer-events: none;
 }
@@ -53,33 +53,22 @@ polygon {
 <script src="scripts/animated_blur.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    initializeAnimatedBlur(document.querySelector('.viewport'));
+    initializeAnimatedBlur(document.querySelector('#animated-blur'));
   });
 </script>
 </head>
 
 <body>
-<div id ="viewport" class="viewport">
-  <div id="animated-blur">
-    <img id="img" src="./images/Stanford_Bunny.png" style="visibility:hidden" alt="Stanford Bunny" width="800"
-      height="800">
-    <div id="desc">The Stanford bunny is a computer graphics 3D test
-      model developed by Greg Turk and Marc Levoy in 1994 at Stanford
-      University. The bunny consists of data describing 69,451
-      triangles determined by 3D scanning a ceramic figurine of a
-      rabbit. This model and others were scanned to test methods of
-      range scanning physical objects.</div>
-  </div>
-<!--
-  <div id="animated-blur">
-    <img src="./images/Google.png" alt="Google" width="600"
-      height="600">
-    <div id="desc">Google is an American multinational technology
-      company specializing in Internet-related services and products
-      that include online advertising technologies, search, cloud
-      computing, software, and hardware.</div>
-  </div>
--->
+<div id="animated-blur" class="viewport">
+  <img id="img" src="./images/Stanford_Bunny.png"
+                style="visibility:auto" alt="Stanford Bunny" width="800"
+    height="800">
+  <div id="desc">The Stanford bunny is a computer graphics 3D test
+    model developed by Greg Turk and Marc Levoy in 1994 at Stanford
+    University. The bunny consists of data describing 69,451
+    triangles determined by 3D scanning a ceramic figurine of a
+    rabbit. This model and others were scanned to test methods of
+    range scanning physical objects.</div>
 </div>
 </body>
 </html>

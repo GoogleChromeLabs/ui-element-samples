@@ -18,14 +18,11 @@
 var svgns = "http://www.w3.org/2000/svg";
 var xhtmlns = "http://www.w3.org/1999/xhtml";
 
-function initializeAnimatedBlur(clip) {
-  var container = document.getElementById('animated-blur');
+function initializeAnimatedBlur(element) {
   var animatedBlur = false;
   var inOrOut = 0;
   var num = 4;
   var blurURL = "";
-
-  cloneElement(clip);
 
   function addKeyFrames(name, id) {
     var keyframes = '@keyframes ' + name + ' {';
@@ -44,12 +41,12 @@ function initializeAnimatedBlur(clip) {
     }
   }
 
-  function blurInOrOut(e, container, inOrOut) {
+  function blurInOrOut(e, inOrOut) {
     if (!inOrOut) return;
 
     for (var i = 0; i < num; ++i) {
-      var svg = inOrOut > 0 ? e.currentTarget.querySelector('#b' + (i + 1))
-          : e.currentTarget.querySelector('#b' + (num - i));
+      var svg = inOrOut > 0 ? document.body.querySelector('#b' + (i + 1))
+          : document.body.querySelector('#b' + (num - i));
       svg.style.animation = 'b' + (i + 1) + '-anim 2s forwards linear';
     }
   }
@@ -59,15 +56,14 @@ function initializeAnimatedBlur(clip) {
       document.querySelector('#toolTip').remove();
       return;
     }
-    var width =
-        document.querySelector('#viewport').getBoundingClientRect().width;
-    var height =
-        document.querySelector('#viewport').getBoundingClientRect().height;
+    var width = element.clientWidth;
+    var height = element.clientHeight;
+
     var svg = document.createElementNS(svgns, 'svg');
     svg.id = 'toolTip';
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
-    document.querySelector('#viewport').appendChild(svg);
+    document.body.appendChild(svg);
 
     var g = document.createElementNS(svgns, 'g');
     svg.appendChild(g);
@@ -128,7 +124,7 @@ function initializeAnimatedBlur(clip) {
       filter.append(feGaussianBlur);
       var image = document.createElementNS(svgns, 'image');
       image.id = 'img';
-      image.setAttribute('src', blurURL);//img.currentSrc);
+      image.setAttribute('href', img.currentSrc);
       image.setAttribute('x', 0);
       image.setAttribute('y', 0);
       image.setAttribute('width', img.width);
@@ -139,63 +135,47 @@ function initializeAnimatedBlur(clip) {
     }
   }
 
-  function cloneElement(element) {
-    var svg = document.createElementNS(svgns, 'svg');
-    svg.setAttribute('xmlns', svgns);
-    svg.setAttribute('width', 200);
-    svg.setAttribute('height', 200);
-    var fo = document.createElementNS(svgns, 'foreignObject');
-    fo.id = 'cloned-element';
-    fo.setAttribute('width', '100%');
-    fo.setAttribute('height', '100%');
-    svg.appendChild(fo);
+  function cloneElement(num) {
+    for (var i = 1; i <= num; ++i) {
+      var svg = document.createElementNS(svgns, 'svg');
+      svg.id = 'b' + i;
+      svg.setAttribute('width', element.clientWidth);
+      svg.setAttribute('height', element.clientHeight);
 
-    var clonedElement = document.createElement('img');
-    clonedElement.setAttribute('xmlns', xhtmlns);
-    clonedElement.src = 'http://www.w3schools.com/css/trolltunga.jpg';
-    clonedElement.innerHTML = 'fdsdfsdfdsfsdfdsfsfsdf';
-    //var clonedElement = element.cloneNode(true);
-    fo.appendChild(clonedElement);
+      var filter = document.createElementNS(svgns, 'filter');
+      filter.id = 'f' + i;
+      filter.setAttribute('width', '100%');
+      filter.setAttribute('height', '100%');
+      svg.append(filter);
+      var feGaussianBlur = document.createElementNS(svgns, 'feGaussianBlur');
+      feGaussianBlur.setAttribute('stdDeviation', 4 * (i - 1));
+      filter.append(feGaussianBlur);
 
-    paintElementToCanvas(svg);
-  }
+      var fo = document.createElementNS(svgns, 'foreignObject');
+      fo.setAttribute('filter', 'url(#f' + i + ')');
+      fo.setAttribute('width', '100%');
+      fo.setAttribute('height', '100%');
 
-  function paintElementToCanvas(data) {
-    var canvas = document.createElement('canvas');
-    document.body.appendChild(canvas);
-    var ctx = canvas.getContext('2d');
+      var container = document.createElementNS(xhtmlns, 'div');
+      container.innerHTML = element.innerHTML;
+      fo.appendChild(container);
 
-    var DOMURL = window.URL || window.webkitURL || window;
-    data = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">' +
-           '<foreignObject width="100%" height="100%">' +
-           '<div xmlns="http://www.w3.org/1999/xhtml" style="font-size:40px">' +
-             'like ' +
-             'cheese' +
-           '</div>' +
-           '</foreignObject>' +
-           '</svg>';
-    var img = new Image();
-    var svg = new Blob([data], {type: 'image/svg+xml'});
-    var url = DOMURL.createObjectURL(svg);
+      svg.appendChild(fo);
 
-    img.onload = function () {
-      ctx.drawImage(img, 0, 0);
-      DOMURL.revokeObjectURL(url);
+      document.body.appendChild(svg);
+      addKeyFrames('b' + i + '-anim', i - 1);
     }
-
-    img.src = url;
-    blurURL = canvas.toDataURL('image/svg+xml');
   }
 
-  document.getElementById("viewport").onclick = function(e) {
+  document.onclick = function(e) {
     if (!animatedBlur) {
-      createObjects(e, num);
+      cloneElement(num);
       inOrOut = 1;
       animatedBlur = true;
     } else {
       inOrOut *= -1;
     }
-    blurInOrOut(e, container, inOrOut);
+    blurInOrOut(e, inOrOut);
     displayToolTips(e, inOrOut);
   }
 
