@@ -17,6 +17,8 @@ limitations under the License.
 <style>
 
 body {
+  background: 0 -100px repeat-x
+  url(./images/bg_gallery.png) #4F191A;
   margin: 0;
   padding: 0;
 }
@@ -27,29 +29,53 @@ body {
 
 svg {
   position: absolute;
-  top: 0px;
   display: block;
   margin: 0 auto;
+  pointer-events: none;
 }
 
-.svg-tooltip {
+.selected {
+  position: absolute;
+  display: block;
   pointer-events: none;
 }
 
 .tooltip {
   padding: 10px;
   color: blue;
+  pointer-events: none;
+}
+
+.tooltip p{
+  font-size: 18px;
 }
 
 polygon {
   pointer-events: none;
 }
 
-#animated-blur > #desc {
-  display: none;
+h1 {
+  text-align: center;
+  font-size: 40px;
 }
 
+p {
+  font-size: 25px;
+}
+
+table {
+  margin: 0 auto;
+}
+
+td {
+  padding: 20px;
+}
+
+figcaption {
+  display: none;
+}
 </style>
+
 <script src="scripts/animated_blur.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -59,16 +85,70 @@ polygon {
 </head>
 
 <body>
-<div id="animated-blur" class="viewport">
-  <img id="img" src="./images/Stanford_Bunny.png" alt="Stanford Bunny" width="800"
-    height="800">
-  <div id="desc">The Stanford bunny is a computer graphics 3D test
-    model developed by Greg Turk and Marc Levoy in 1994 at Stanford
-    University. The bunny consists of data describing 69,451
-    triangles determined by 3D scanning a ceramic figurine of a
-    rabbit. This model and others were scanned to test methods of
-    range scanning physical objects.</div>
-</div>
+  <div id="animated-blur" class="viewport">
+    <h1>Google products gallery</h1>
+    <p>Browse a comprehensive list of Google products designed to help you work and play, stay organized, get answers, keep in touch, grow your business, and more.</p>
+    <table>
+      <tr>
+        <td>
+          <figure>
+            <img src="./images/Chrome.png" alt="Chrome"/>
+            <figcaption>A fast, simple, and secure browser for the modern web.
+            </figcaption>
+          </figure>
+        </td>
+        <td>
+          <figure>
+            <img src="./images/YouTube.png" alt="YouTube"/>
+            <figcaption>Discover, watch, and share your favorite videos and music.
+            </figcaption>
+          </figure>
+        </td>
+        <td>
+          <figure>
+            <img src="./images/Maps.png" alt="Maps"/>
+            <figcaption>Get GPS navigation, traffic alerts, transit directions, and more.
+            </figcaption>
+          </figure>
+        </td>
+        <td>
+          <figure>
+            <img src="./images/Translate.png" alt="Translate"/>
+            <figcaption>Speak, scan, type, or draw to translate in over 100 languages.
+            </figcaption>
+          </figure>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <figure>
+            <img src="./images/Search.png" alt="Search"/>
+            <figcaption>Get instant answers on the web and on your phone.
+            </figcaption>
+          </figure>
+        </td>
+        <td>
+          <figure>
+            <img src="./images/Android.png" alt="Android Phones"/>
+            <figcaption>All kinds of devices for all kinds of folks.
+            </figcaption>
+          </figure>
+        </td>
+        <td>
+          <figure>
+            <img src="./images/Gmail.png" alt="Gmail"/>
+            <figcaption>Email by Google</figcaption>
+          </figure>
+        </td>
+        <td>
+          <figure>
+            <img src="./images/Photos.png" alt="Photos"/>
+            <figcaption>All your photos, organized, and easy to find.
+            </figcaption>
+          </figure>
+        </td>
+      </tr>
+    </table>
+  </div>
 </body>
 </html>
-
