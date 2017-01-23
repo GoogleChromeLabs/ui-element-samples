@@ -16,14 +16,24 @@ limitations under the License.
 <title>Animated Blur</title>
 <style>
 
+html {
+  -webkit-text-size-adjust: none; /* Never autoresize text */
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+}
+
 body {
   background: 0 -100px repeat-x
   url(./images/bg_gallery.png) #4F191A;
   margin: 0;
   padding: 0;
+  overflow: scroll;
+  min-width: -webkit-min-content;
+  min-width: -moz-min-content;
+  min-width: min-content;
 }
 
-.viewport {
+.animated-blur {
   position: relative;
 }
 
@@ -46,7 +56,13 @@ svg {
   pointer-events: none;
 }
 
+.lead {
+  font-style: italic;
+  color: purple;
+}
+
 .tooltip p{
+  padding: 0;
   font-size: 18px;
 }
 
@@ -55,12 +71,15 @@ polygon {
 }
 
 h1 {
-  text-align: center;
+  text-align: -moz-center;
+  text-align: -webkit-center;
   font-size: 40px;
+  /*Necessary due to cross-platform collapsing margin*/
+  margin-top: 0px;
 }
 
 p {
-  font-size: 25px;
+  font-size: 35px;
 }
 
 table {
@@ -79,13 +98,13 @@ figcaption {
 <script src="scripts/animated_blur.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    initializeAnimatedBlur(document.querySelector('#animated-blur'));
+    initializeAnimatedBlur(document.querySelector('.animated-blur'));
   });
 </script>
 </head>
 
 <body>
-  <div id="animated-blur" class="viewport">
+  <div class="animated-blur">
     <h1>Google products gallery</h1>
     <p>Browse a comprehensive list of Google products designed to help you work and play, stay organized, get answers, keep in touch, grow your business, and more.</p>
     <table>
@@ -149,6 +168,7 @@ figcaption {
         </td>
       </tr>
     </table>
+    <div style="height:2000px;"></div>
   </div>
 </body>
 </html>
