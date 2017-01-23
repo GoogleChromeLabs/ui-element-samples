@@ -148,11 +148,11 @@ function initializeAnimatedBlur(element) {
 
       var filter = document.createElementNS(svgns, 'filter');
       filter.id = 'f' + i;
-      filter.setAttribute('width', width);
-      filter.setAttribute('height', height);
       svg.appendChild(filter);
       var feGaussianBlur = document.createElementNS(svgns, 'feGaussianBlur');
       feGaussianBlur.setAttribute('stdDeviation', 4 * (i - 1));
+      // Necessary for Safari
+      feGaussianBlur.setAttribute('color-interpolation-filters', 'sRGB');
       filter.appendChild(feGaussianBlur);
 
       var fo = document.createElementNS(svgns, 'foreignObject');
