@@ -55,15 +55,15 @@ function initializeAnimatedBlur(element) {
     for (var i = 0; i < num; ++i) {
       var svg = inOrOut > 0 ? document.body.querySelector('#b' + (i + 1))
           : document.body.querySelector('#b' + (num - i));
-      svg.style.animation = 'b' + (i + 1) + '-anim 2s forwards linear';
+      svg.style.animation = 'b' + (i + 1) + '-anim 1s forwards linear';
     }
     // Tooltip and temporary img blur out
     if (inOrOut == -1) {
       if (currentImg) {
-        currentImg.style.animation = 'b1-anim 6s forwards linear';
+        currentImg.style.animation = 'b1-anim 4s forwards linear';
       }
       if (currentTooltip) {
-        currentTooltip.style.animation = 'b1-anim 3s forwards linear';
+        currentTooltip.style.animation = 'b1-anim 1.5s forwards linear';
       }
       document.body.querySelector('.animated-blur').style.animation =
           'b4-anim 1s forwards linear';
