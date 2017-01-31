@@ -170,17 +170,6 @@ function initializeAnimatedBlur(element) {
     }
   }
 
-  function reset() {
-    var svgs = document.body.querySelectorAll('svg[id^="b"]');
-    for (var i = 0; i < svgs.length; ++i) {
-      svgs[i].remove();
-    }
-    if (currentTooltip) {
-      currentTooltip.remove();
-      currentTooltip = null;
-    }
-  }
-
   function displayCurrentImg() {
     currentImg = currentBlurEvent.target.cloneNode(true);
     currentImg.setAttribute('class', 'selected temporary');
