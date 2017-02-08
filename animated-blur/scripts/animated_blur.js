@@ -83,8 +83,8 @@ function initializeAnimatedBlur(element) {
     svg.id = 'toolTip';
     svg.style.top = element.offsetTop + 'px';
     svg.style.left = element.offsetLeft + 'px';
-    svg.style.width = width + 'px';
-    svg.style.height = height + 'px';
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', height);
     document.body.appendChild(svg);
     currentTooltip = svg;
 
@@ -99,7 +99,7 @@ function initializeAnimatedBlur(element) {
         element.clientWidth - foWidth - tip.w : anchor.w - tip.w;
 
     fo.setAttribute('x', tooltipX);
-    fo.style.width = foWidth + 'px';
+    fo.setAttribute('width', foWidth);
     fo.setAttribute('class', 'svg-tooltip');
     g.appendChild(fo);
     var div = document.createElementNS(xhtmlns, 'div');
@@ -116,7 +116,7 @@ function initializeAnimatedBlur(element) {
     //TODO: getBoundingClientRect doesn't work properly in Firefox
     //var foHeight = div.getBoundingClientRect().height;
     var foHeight = 150;
-    fo.style.height = foHeight + 'px';
+    fo.setAttribute('height', foHeight);
     var tooltipY = anchor.h + tip.h + foHeight > element.clientHeight ?
     element.clientHeight - foHeight - tip.h : anchor.h + tip.h;
     fo.setAttribute('y', tooltipY);
@@ -124,9 +124,9 @@ function initializeAnimatedBlur(element) {
     polygon.setAttribute('points', "0,0 0," + foHeight + " " + foWidth +
         "," + foHeight + " " + foWidth + ",0 " + (t) + ",0 " + tip.w +
         "," + (-tip.h) + " " + (t/2) + ",0");
-    //polygon.setAttribute('height', foHeight + tip.h);
-    polygon.style.height = foHeight + tip.h + 'px';
-    polygon.style.width = foWidth + 'px';
+    polygon.setAttribute('height', foHeight + tip.h);
+    polygon.style.height = foHeight + tip.h;
+    polygon.setAttribute('width', foWidth);
     polygon.setAttribute('fill', '#D8D8D8');
     polygon.setAttribute('opacity', 0.75);
     polygon.setAttribute('transform', 'translate(' + tooltipX + ',' +
@@ -185,7 +185,7 @@ function initializeAnimatedBlur(element) {
     }
     var animatedElements = document.body.querySelectorAll('.animated-blur');
     for (var i = 0; i < animatedElements.length; ++i) {
-      animatedElements[i].style = '';
+      animatedElements[i].removeAttribute('style');
     }
   }
 
