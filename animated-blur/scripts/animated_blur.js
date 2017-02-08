@@ -53,9 +53,9 @@ function initializeAnimatedBlur(element) {
   function startBlur(inOrOut) {
     if (!inOrOut) return;
     for (var i = 0; i < num; ++i) {
-      var svg = inOrOut > 0 ? document.body.querySelector('#b' + (i + 1))
+      var div = inOrOut > 0 ? document.body.querySelector('#b' + (i + 1))
           : document.body.querySelector('#b' + (num - i));
-      svg.style.animation = 'b' + (i + 1) + '-anim 1s forwards linear';
+      div.style.animation = 'b' + (i + 1) + '-anim 1s forwards linear';
     }
     // Tooltip and temporary img blur out
     if (inOrOut == -1) {
@@ -66,7 +66,7 @@ function initializeAnimatedBlur(element) {
         currentTooltip.style.animation = 'b1-anim 1.5s forwards linear';
       }
       document.body.querySelector('.animated-blur').style.animation =
-          'b4-anim 1s forwards linear';
+          'b' + num + '-anim 1s forwards linear';
     } else {
       document.body.querySelector('.animated-blur').style.animation =
           'b1-anim 1s forwards linear';
@@ -83,8 +83,8 @@ function initializeAnimatedBlur(element) {
     svg.id = 'toolTip';
     svg.style.top = element.offsetTop + 'px';
     svg.style.left = element.offsetLeft + 'px';
-    svg.setAttribute('width', width);
-    svg.setAttribute('height', height);
+    svg.style.width = width + 'px';
+    svg.style.height = height + 'px';
     document.body.appendChild(svg);
     currentTooltip = svg;
 
@@ -99,7 +99,7 @@ function initializeAnimatedBlur(element) {
         element.clientWidth - foWidth - tip.w : anchor.w - tip.w;
 
     fo.setAttribute('x', tooltipX);
-    fo.setAttribute('width', foWidth);
+    fo.style.width = foWidth + 'px';
     fo.setAttribute('class', 'svg-tooltip');
     g.appendChild(fo);
     var div = document.createElementNS(xhtmlns, 'div');
@@ -116,7 +116,7 @@ function initializeAnimatedBlur(element) {
     //TODO: getBoundingClientRect doesn't work properly in Firefox
     //var foHeight = div.getBoundingClientRect().height;
     var foHeight = 150;
-    fo.setAttribute('height', foHeight);
+    fo.style.height = foHeight + 'px';
     var tooltipY = anchor.h + tip.h + foHeight > element.clientHeight ?
     element.clientHeight - foHeight - tip.h : anchor.h + tip.h;
     fo.setAttribute('y', tooltipY);
@@ -124,9 +124,9 @@ function initializeAnimatedBlur(element) {
     polygon.setAttribute('points', "0,0 0," + foHeight + " " + foWidth +
         "," + foHeight + " " + foWidth + ",0 " + (t) + ",0 " + tip.w +
         "," + (-tip.h) + " " + (t/2) + ",0");
-    polygon.setAttribute('height', foHeight + tip.h);
-    polygon.style.height = foHeight + tip.h;
-    polygon.setAttribute('width', foWidth);
+    //polygon.setAttribute('height', foHeight + tip.h);
+    polygon.style.height = foHeight + tip.h + 'px';
+    polygon.style.width = foWidth + 'px';
     polygon.setAttribute('fill', '#D8D8D8');
     polygon.setAttribute('opacity', 0.75);
     polygon.setAttribute('transform', 'translate(' + tooltipX + ',' +
@@ -134,39 +134,31 @@ function initializeAnimatedBlur(element) {
     g.insertBefore(polygon, fo);
   }
 
-  function buildSVGs(num) {
+  function cloneElements(num) {
     var width = element.clientWidth;
     var height = element.clientHeight;
+    var container = document.createElement('div');
+    container.id = 'clonedElement';
+    container.style.top = element.offsetTop + 'px';
+    container.style.left = element.offsetLeft + 'px';
+    container.style.width = width + 'px';
+    container.style.height = height + 'px';
+    // TODO: The following doesn't seem to have benefits with
+    // respect to GPU and renderer.
+    //container.classList.add('composited');
+    container.classList.add('clonedElement');
+    document.body.appendChild(container);
     for (var i = 1; i <= num; ++i) {
-      var svg = document.createElementNS(svgns, 'svg');
-      svg.id = 'b' + i;
-      svg.style.top = element.offsetTop + 'px';
-      svg.style.left = element.offsetLeft + 'px';
-      svg.setAttribute('width', width);
-      svg.setAttribute('height', height);
-      svg.setAttribute('class', 'backgroundSVG');
+      var div = document.createElement('div');
+      div.id = 'b' + i;
+      div.classList.add('clonedElement');
 
-      var filter = document.createElementNS(svgns, 'filter');
-      filter.id = 'f' + i;
-      svg.appendChild(filter);
-      var feGaussianBlur = document.createElementNS(svgns, 'feGaussianBlur');
-      feGaussianBlur.setAttribute('stdDeviation', 4 * (i - 1));
-      // Necessary for Safari
-      feGaussianBlur.setAttribute('color-interpolation-filters', 'sRGB');
-      filter.appendChild(feGaussianBlur);
+      var clonedElement = element.cloneNode(true);
+      var filterStdDev = 4 * (i - 1);
+      clonedElement.style.filter = 'blur(' + filterStdDev + 'px)';
 
-      var fo = document.createElementNS(svgns, 'foreignObject');
-      fo.setAttribute('filter', 'url(#f' + i + ')');
-      fo.setAttribute('width', width);
-      fo.setAttribute('height', height);
-      fo.setAttribute('class', 'backgroundSVG');
-
-      var container = document.createElementNS(xhtmlns, 'div');
-      container.innerHTML = element.innerHTML;
-      fo.appendChild(container);
-      svg.appendChild(fo);
-
-      document.body.appendChild(svg);
+      div.appendChild(clonedElement);
+      container.appendChild(div);
     }
   }
 
@@ -183,27 +175,31 @@ function initializeAnimatedBlur(element) {
       currentTooltip.remove();
       currentTooltip = null;
     }
-    var svgs = document.body.querySelectorAll('svg[id^="b"]');
-    for (var i = 0; i < svgs.length; ++i) {
-      svgs[i].remove();
+    var clonedElements = document.body.querySelectorAll('.clonedElement');
+    for (var i = 0; i < clonedElements.length; ++i) {
+      clonedElements[i].remove();
     }
     if (currentImg) {
       currentImg.remove();
       currentImg = null;
     }
+    var animatedElements = document.body.querySelectorAll('.animated-blur');
+    for (var i = 0; i < animatedElements.length; ++i) {
+      animatedElements[i].style = '';
+    }
   }
 
   function prepareToBlur() {
-    buildSVGs(num);
+    cloneElements(num);
     displayCurrentImg();
     displayToolTips(inOrOut);
   }
 
   function updateOnResize() {
-    var svgElements = document.body.querySelectorAll('.backgroundSVG');
-    for (var i = 0; i < svgElements.length; ++i) {
-      svgElements[i].setAttribute('width', element.clientWidth);
-      svgElements[i].setAttribute('height', element.clientHeight);
+    var elements = document.body.querySelectorAll('.clonedElement');
+    for (var i = 0; i < elements.length; ++i) {
+      elements[i].style.width = element.clientWidth + 'px';
+      elements[i].style.height = element.clientHeight + 'px';
     }
 
     // No need to proceed if there is no blur event
