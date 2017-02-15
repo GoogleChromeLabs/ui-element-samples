@@ -26,11 +26,32 @@ function initializeAnimatedBlur(element) {
   var currentImg;
   var currentBlurEvent;
   setupKeyFrames();
+  createTemplate();
+  cloneElements(num);
+
+  // Create template for shadow dom. It includes the element to be animated
+  // and its style.
+  function createTemplate() {
+    var template = document.createElement('Template');
+    template.id = 'animatedDoc';
+    template.innerHTML = document.getElementsByTagName('style')[0].outerHTML;
+    template.innerHTML += element.outerHTML;
+    document.body.appendChild(template);
+  }
+
+  function getShadowRoot(element) {
+    const supportsShadowDOMV1 = !!HTMLElement.prototype.attachShadow;
+    if (supportsShadowDOMV1)
+      return element.attachShadow({ mode: 'closed' });
+    else
+      return element.createShadowRoot();
+  }
 
   function setupKeyFrames() {
     for (var id = 0; id < num; ++id) {
       var keyframes = '@keyframes b' + (id + 1)  + '-anim {';
       for (var i = 0; i <= num; ++i) {
+        // Using opacity 0.01 and 0.99 may benifit the performance?
         var opacity = (i == id || i == id + 1) ? 1 : 0;
         keyframes += (i * 100 / num) + '% { opacity: ' + opacity + '; }';
       }
@@ -70,6 +91,7 @@ function initializeAnimatedBlur(element) {
     } else {
       document.body.querySelector('.animated-blur').style.animation =
           'b1-anim 1s forwards linear';
+      document.body.querySelector('#clonedElement').style.visibility = 'visible';
     }
   }
 
@@ -143,6 +165,7 @@ function initializeAnimatedBlur(element) {
     container.style.left = element.offsetLeft + 'px';
     container.style.width = width + 'px';
     container.style.height = height + 'px';
+    container.style.visibility = 'hidden';
     // TODO: The following doesn't seem to have benefits with
     // respect to GPU and renderer.
     //container.classList.add('composited');
@@ -153,11 +176,19 @@ function initializeAnimatedBlur(element) {
       div.id = 'b' + i;
       div.classList.add('clonedElement');
 
-      var clonedElement = element.cloneNode(true);
-      var filterStdDev = 4 * (i - 1);
-      clonedElement.style.filter = 'blur(' + filterStdDev + 'px)';
+      var shadowRoot = getShadowRoot(div);
 
-      div.appendChild(clonedElement);
+      var template = document.querySelector('#animatedDoc');
+      var clone = document.importNode(template.content, true);
+
+      var filterStdDev = 4 * (i - 1);
+      clone.querySelector('.animated-blur').style.filter = 'blur(' + filterStdDev + 'px)';
+      shadowRoot.appendChild(clone);
+
+      // Without using template
+      //var clonedElement = element.cloneNode(true);
+      //clonedElement.style.filter = 'blur(' + filterStdDev + 'px)';
+      //shadowRoot.appendChild(clonedElement);
       container.appendChild(div);
     }
   }
@@ -175,14 +206,12 @@ function initializeAnimatedBlur(element) {
       currentTooltip.remove();
       currentTooltip = null;
     }
-    var clonedElements = document.body.querySelectorAll('.clonedElement');
-    for (var i = 0; i < clonedElements.length; ++i) {
-      clonedElements[i].remove();
-    }
+
     if (currentImg) {
       currentImg.remove();
       currentImg = null;
     }
+
     var animatedElements = document.body.querySelectorAll('.animated-blur');
     for (var i = 0; i < animatedElements.length; ++i) {
       animatedElements[i].removeAttribute('style');
@@ -190,7 +219,6 @@ function initializeAnimatedBlur(element) {
   }
 
   function prepareToBlur() {
-    cloneElements(num);
     displayCurrentImg();
     displayToolTips(inOrOut);
   }
