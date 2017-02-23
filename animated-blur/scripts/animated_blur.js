@@ -25,9 +25,15 @@ function initializeAnimatedBlur(element) {
   var currentTooltip;
   var currentImg;
   var currentBlurEvent;
+
   setupKeyFrames();
   createTemplate();
   cloneElements(num);
+  createToolTipSVG();
+
+  // Create layer for the animated element, otherwise new layer would be
+  // created onclick due to 'active animation' which causes repaint
+  document.body.querySelector('.animated-blur').classList.add('composited');
 
   // Create template for shadow dom. It includes the element to be animated
   // and its style.
@@ -52,7 +58,7 @@ function initializeAnimatedBlur(element) {
       var keyframes = '@keyframes b' + (id + 1)  + '-anim {';
       for (var i = 0; i <= num; ++i) {
         // Using opacity 0.01 and 0.99 may benifit the performance?
-        var opacity = (i == id || i == id + 1) ? 1 : 0;
+        var opacity = (i == id || i == id + 1) ? 1 : 0.01;
         keyframes += (i * 100 / num) + '% { opacity: ' + opacity + '; }';
       }
       keyframes += '}';
@@ -84,20 +90,22 @@ function initializeAnimatedBlur(element) {
         currentImg.style.animation = 'b1-anim 4s forwards linear';
       }
       if (currentTooltip) {
-        currentTooltip.style.animation = 'b1-anim 1.5s forwards linear';
+        document.getElementById('toolTip').style.animation = 'b1-anim 1s forwards linear';
+        //currentTooltip.style.animation = 'b1-anim 1s forwards linear';
       }
       document.body.querySelector('.animated-blur').style.animation =
           'b' + num + '-anim 1s forwards linear';
     } else {
       document.body.querySelector('.animated-blur').style.animation =
           'b1-anim 1s forwards linear';
-      document.body.querySelector('#clonedElement').style.visibility = 'visible';
+
+      // Update the correct location from offscreen
+      document.body.querySelector('#clonedElement').style.left =
+          element.offsetLeft + 'px';
     }
   }
 
-  function displayToolTips(inOrOut) {
-    if (!inOrOut) return;
-    if (currentBlurEvent.target.nextElementSibling.localName != 'figcaption') return;
+  function createToolTipSVG() {
     var width = element.clientWidth;
     var height = element.clientHeight;
 
@@ -107,12 +115,19 @@ function initializeAnimatedBlur(element) {
     svg.style.left = element.offsetLeft + 'px';
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
+    svg.setAttribute('class', 'composited');
     document.body.appendChild(svg);
-    currentTooltip = svg;
+  }
 
+  function displayToolTips(inOrOut) {
+    if (!inOrOut) return;
+    if (currentBlurEvent.target.nextElementSibling.localName != 'figcaption') return;
+    var svg = document.body.querySelector('#toolTip');
     var g = document.createElementNS(svgns, 'g');
+    currentTooltip = g;
     svg.appendChild(g);
     var foWidth = 300;
+    // TODO: Doesn't work with window resize
     var anchor = {'w': currentBlurEvent.pageX, 'h': currentBlurEvent.pageY};
     var t = 50, k = 15;
     var tip = {'w': (3/4 * t), 'h': k};
@@ -162,18 +177,26 @@ function initializeAnimatedBlur(element) {
     var container = document.createElement('div');
     container.id = 'clonedElement';
     container.style.top = element.offsetTop + 'px';
-    container.style.left = element.offsetLeft + 'px';
     container.style.width = width + 'px';
     container.style.height = height + 'px';
-    container.style.visibility = 'hidden';
+    // Paint prepared elements offscreen
+    container.style.left = '-9999px' ;
+
     // TODO: The following doesn't seem to have benefits with
     // respect to GPU and renderer.
     //container.classList.add('composited');
     container.classList.add('clonedElement');
-    document.body.appendChild(container);
+    // cloned elements must be inserted before the animated
+    // element, otherwise at the end of the animation where
+    // will be a layer creating for .animated-blur due to
+    // squashing contents which causes repaint
+    document.body.insertBefore(container, document.body.querySelector('.animated-blur'));
     for (var i = 1; i <= num; ++i) {
       var div = document.createElement('div');
       div.id = 'b' + i;
+      // Compositing individual div instead of the container
+      // is necessary. Otherwise will cause repaint.
+      div.classList.add('composited');
       div.classList.add('clonedElement');
 
       var shadowRoot = getShadowRoot(div);
@@ -182,7 +205,8 @@ function initializeAnimatedBlur(element) {
       var clone = document.importNode(template.content, true);
 
       var filterStdDev = 4 * (i - 1);
-      clone.querySelector('.animated-blur').style.filter = 'blur(' + filterStdDev + 'px)';
+      clone.querySelector('.animated-blur').style.filter =
+          'blur(' + filterStdDev + 'px)';
       shadowRoot.appendChild(clone);
 
       // Without using template
@@ -195,16 +219,18 @@ function initializeAnimatedBlur(element) {
 
   function displayCurrentImg() {
     currentImg = currentBlurEvent.target.cloneNode(true);
-    currentImg.setAttribute('class', 'selected temporary');
+    currentImg.setAttribute('class', 'selected temporary composited');
     currentImg.style.left = currentBlurEvent.target.x + 'px';
     currentImg.style.top = currentBlurEvent.target.y + 'px';
-    document.body.appendChild(currentImg);
+    document.body.insertBefore(currentImg,
+        document.getElementById('toolTip'));
   }
 
   function reset() {
     if (currentTooltip) {
       currentTooltip.remove();
       currentTooltip = null;
+      document.getElementById('toolTip').style.animation = '';
     }
 
     if (currentImg) {
@@ -212,10 +238,10 @@ function initializeAnimatedBlur(element) {
       currentImg = null;
     }
 
-    var animatedElements = document.body.querySelectorAll('.animated-blur');
-    for (var i = 0; i < animatedElements.length; ++i) {
-      animatedElements[i].removeAttribute('style');
-    }
+    //var animatedElements = document.body.querySelectorAll('.animated-blur');
+    //for (var i = 0; i < animatedElements.length; ++i) {
+    //  animatedElements[i].removeAttribute('style');
+    //}
   }
 
   function prepareToBlur() {
