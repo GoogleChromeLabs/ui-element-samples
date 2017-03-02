@@ -31,10 +31,6 @@ function initializeAnimatedBlur(element) {
   cloneElements(num);
   createToolTipSVG();
 
-  // Create layer for the animated element, otherwise new layer would be
-  // created onclick due to 'active animation' which causes repaint
-  document.body.querySelector('.animated-blur').classList.add('composited');
-
   // Create template for shadow dom. It includes the element to be animated
   // and its style.
   function createTemplate() {
@@ -187,19 +183,13 @@ function initializeAnimatedBlur(element) {
 
     // TODO: The following doesn't seem to have benefits with
     // respect to GPU and renderer.
-    //container.classList.add('composited');
+    container.classList.add('composited');
     container.classList.add('clonedElement');
-    // cloned elements must be inserted before the animated
-    // element, otherwise at the end of the animation where
-    // will be a layer creating for .animated-blur due to
-    // squashing contents which causes repaint
-    document.body.insertBefore(container, document.body.querySelector('.animated-blur'));
+    document.body.appendChild(container);
+
     for (var i = 1; i <= num; ++i) {
       var div = document.createElement('div');
       div.id = 'b' + i;
-      // Compositing individual div instead of the container
-      // is necessary. Otherwise will cause repaint.
-      div.classList.add('composited');
       div.classList.add('clonedElement');
 
       var shadowRoot = getShadowRoot(div);
