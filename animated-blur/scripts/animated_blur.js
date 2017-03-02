@@ -57,8 +57,9 @@ function initializeAnimatedBlur(element) {
     for (var id = 0; id < num; ++id) {
       var keyframes = '@keyframes b' + (id + 1)  + '-anim {';
       for (var i = 0; i <= num; ++i) {
-        // Using opacity 0.01 and 0.99 may benifit the performance?
-        var opacity = (i == id || i == id + 1) ? 1 : 0.01;
+        // Use 0.99 otherwise Safari would have repainting
+        // at the end of animation
+        var opacity = (i == id || i == id + 1) ? 0.99 : 0.01;
         keyframes += (i * 100 / num) + '% { opacity: ' + opacity + '; }';
       }
       keyframes += '}';
@@ -180,6 +181,8 @@ function initializeAnimatedBlur(element) {
     container.style.width = width + 'px';
     container.style.height = height + 'px';
     // Paint prepared elements offscreen
+    // Note: on Safari this would cause repaint when moving
+    // the element back to screen.
     container.style.left = '-9999px' ;
 
     // TODO: The following doesn't seem to have benefits with
