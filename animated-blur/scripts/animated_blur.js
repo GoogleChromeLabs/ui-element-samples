@@ -31,6 +31,9 @@ function initializeAnimatedBlur(element) {
   cloneElements(num);
   createToolTipSVG();
 
+  // Create a compositing layer for the animated blur element after it
+  // gets cloned.
+  document.body.querySelector('.animated-blur').classList.add('composited');
   // Create template for shadow dom. It includes the element to be animated
   // and its style.
   function createTemplate() {
@@ -180,9 +183,6 @@ function initializeAnimatedBlur(element) {
     // Note: on Safari this would cause repaint when moving
     // the element back to screen.
     container.style.left = '-9999px' ;
-
-    // TODO: The following doesn't seem to have benefits with
-    // respect to GPU and renderer.
     container.classList.add('composited');
     container.classList.add('clonedElement');
     document.body.appendChild(container);
@@ -190,6 +190,7 @@ function initializeAnimatedBlur(element) {
     for (var i = 1; i <= num; ++i) {
       var div = document.createElement('div');
       div.id = 'b' + i;
+      div.classList.add('composited');
       div.classList.add('clonedElement');
 
       var shadowRoot = getShadowRoot(div);
