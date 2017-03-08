@@ -83,6 +83,8 @@ function initializeAnimatedBlur(element) {
       var div = inOrOut > 0 ? document.body.querySelector('#b' + (i + 1))
           : document.body.querySelector('#b' + (num - i));
       div.style.animation = 'b' + (i + 1) + '-anim 1s forwards linear';
+      // opacity 1 would cause delay on Safari.
+      div.style.opacity = 0.99;
     }
     // Tooltip and temporary img blur out
     if (inOrOut == -1) {
@@ -98,10 +100,6 @@ function initializeAnimatedBlur(element) {
     } else {
       document.body.querySelector('.animated-blur').style.animation =
           'b1-anim 1s forwards linear';
-
-      // Update the correct location from offscreen
-      document.body.querySelector('#clonedElement').style.left =
-          element.offsetLeft + 'px';
     }
   }
 
@@ -179,10 +177,6 @@ function initializeAnimatedBlur(element) {
     container.style.top = element.offsetTop + 'px';
     container.style.width = width + 'px';
     container.style.height = height + 'px';
-    // Paint prepared elements offscreen
-    // Note: on Safari this would cause repaint when moving
-    // the element back to screen.
-    container.style.left = '-9999px' ;
     container.classList.add('composited');
     container.classList.add('clonedElement');
     document.body.appendChild(container);
@@ -192,6 +186,7 @@ function initializeAnimatedBlur(element) {
       div.id = 'b' + i;
       div.classList.add('composited');
       div.classList.add('clonedElement');
+      div.style.opacity = 0.01;
 
       var shadowRoot = getShadowRoot(div);
 
