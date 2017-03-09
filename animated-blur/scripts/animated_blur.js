@@ -157,12 +157,4 @@ class AnimatedBlur {
       elements[i].style.height = this.element.clientHeight + 'px';
     }
   }
-
-  valid(e) {
-    for (var element of e.path) {
-      if (element == this.element)
-        return true;
-    }
-    return false;
-  }
 }
