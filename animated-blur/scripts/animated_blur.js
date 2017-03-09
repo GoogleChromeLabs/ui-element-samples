@@ -15,51 +15,47 @@
  *
  */
 
-var svgns = "http://www.w3.org/2000/svg";
-var xhtmlns = "http://www.w3.org/1999/xhtml";
+var blurMode = {
+  BLUR : 1,
+  STANDBY : 0,
+  UNBLUR : -1
+}
 
-function initializeAnimatedBlur(element) {
-  var animatedBlur = false;
-  var inOrOut = 0;
-  var num = 4;
-  var currentTooltip;
-  var currentImg;
-  var currentBlurEvent;
+class AnimatedBlur {
+  constructor(name, element, params) {
+    this.name = name;
+    this.element = element;
+    this.num = params.steps;
+    this.duration = params.duration;
+    this.initialized = false;
+  }
 
-  setupKeyFrames();
-  createTemplate();
-  cloneElements(num);
-  createToolTipSVG();
-
-  // Create a compositing layer for the animated blur element after it
-  // gets cloned.
-  document.body.querySelector('.animated-blur').classList.add('composited');
   // Create template for shadow dom. It includes the element to be animated
   // and its style.
-  function createTemplate() {
+  createTemplate() {
     var template = document.createElement('Template');
-    template.id = 'animatedDoc';
+    template.id = this.name + '-template';
     template.innerHTML = document.getElementsByTagName('style')[0].outerHTML;
-    template.innerHTML += element.outerHTML;
+    template.innerHTML += this.element.outerHTML;
     document.body.appendChild(template);
   }
 
-  function getShadowRoot(element) {
+  getShadowRoot(div) {
     const supportsShadowDOMV1 = !!HTMLElement.prototype.attachShadow;
     if (supportsShadowDOMV1)
-      return element.attachShadow({ mode: 'closed' });
+      return div.attachShadow({ mode: 'closed' });
     else
-      return element.createShadowRoot();
+      return div.createShadowRoot();
   }
 
-  function setupKeyFrames() {
-    for (var id = 0; id < num; ++id) {
-      var keyframes = '@keyframes b' + (id + 1)  + '-anim {';
-      for (var i = 0; i <= num; ++i) {
+  setupKeyFrames() {
+    for (var id = 0; id < this.num; ++id) {
+      var keyframes = '@keyframes ' + this.name + '-b' + (id + 1)  + '-anim {';
+      for (var i = 0; i <= this.num; ++i) {
         // Use 0.99 otherwise Safari would have repainting
         // at the end of animation
         var opacity = (i == id || i == id + 1) ? 0.99 : 0.01;
-        keyframes += (i * 100 / num) + '% { opacity: ' + opacity + '; }';
+        keyframes += (i * 100 / this.num) + '% { opacity: ' + opacity + '; }';
       }
       keyframes += '}';
 
@@ -73,128 +69,33 @@ function initializeAnimatedBlur(element) {
     }
   }
 
-  // inOrOut:
-  //   1 : blur out
-  //  -1 : blur in
-  //   0 : do nothing
-  function startBlur(inOrOut) {
-    if (!inOrOut) return;
-    for (var i = 0; i < num; ++i) {
-      var div = inOrOut > 0 ? document.body.querySelector('#b' + (i + 1))
-          : document.body.querySelector('#b' + (num - i));
-      div.style.animation = 'b' + (i + 1) + '-anim 1s forwards linear';
-      // opacity 1 would cause delay on Safari.
-      div.style.opacity = 0.99;
-    }
-    // Tooltip and temporary img blur out
-    if (inOrOut == -1) {
-      if (currentImg) {
-        currentImg.style.animation = 'b1-anim 4s forwards linear';
-      }
-      if (currentTooltip) {
-        document.getElementById('toolTip').style.animation = 'b1-anim 1s forwards linear';
-        //currentTooltip.style.animation = 'b1-anim 1s forwards linear';
-      }
-      document.body.querySelector('.animated-blur').style.animation =
-          'b' + num + '-anim 1s forwards linear';
-    } else {
-      document.body.querySelector('.animated-blur').style.animation =
-          'b1-anim 1s forwards linear';
-    }
-  }
-
-  function createToolTipSVG() {
-    var width = element.clientWidth;
-    var height = element.clientHeight;
-
-    var svg = document.createElementNS(svgns, 'svg');
-    svg.id = 'toolTip';
-    svg.style.top = element.offsetTop + 'px';
-    svg.style.left = element.offsetLeft + 'px';
-    svg.setAttribute('width', width);
-    svg.setAttribute('height', height);
-    svg.setAttribute('class', 'composited');
-    document.body.appendChild(svg);
-  }
-
-  function displayToolTips(inOrOut) {
-    if (!inOrOut) return;
-    if (currentBlurEvent.target.nextElementSibling.localName != 'figcaption') return;
-    var svg = document.body.querySelector('#toolTip');
-    var g = document.createElementNS(svgns, 'g');
-    currentTooltip = g;
-    svg.appendChild(g);
-    var foWidth = 300;
-    // TODO: Doesn't work with window resize
-    var anchor = {'w': currentBlurEvent.pageX, 'h': currentBlurEvent.pageY};
-    var t = 50, k = 15;
-    var tip = {'w': (3/4 * t), 'h': k};
-    var fo = document.createElementNS(svgns, 'foreignObject');
-    var tooltipX = anchor.w - tip.w + foWidth > element.clientWidth ?
-        element.clientWidth - foWidth - tip.w : anchor.w - tip.w;
-
-    fo.setAttribute('x', tooltipX);
-    fo.setAttribute('width', foWidth);
-    fo.setAttribute('class', 'svg-tooltip');
-    g.appendChild(fo);
-    var div = document.createElementNS(xhtmlns, 'div');
-    div.setAttribute('class', 'tooltip');
-    fo.appendChild(div);
-    var p = document.createElement('p');
-    p.setAttribute('class', 'lead');
-    p.innerHTML = currentBlurEvent.target.alt;
-    div.appendChild(p);
-    p = document.createElement('p');
-
-    p.innerHTML = currentBlurEvent.target.nextElementSibling.innerText;
-    div.appendChild(p);
-    //TODO: getBoundingClientRect doesn't work properly in Firefox
-    //var foHeight = div.getBoundingClientRect().height;
-    var foHeight = 150;
-    fo.setAttribute('height', foHeight);
-    var tooltipY = anchor.h + tip.h + foHeight > element.clientHeight ?
-    element.clientHeight - foHeight - tip.h : anchor.h + tip.h;
-    fo.setAttribute('y', tooltipY);
-    var polygon = document.createElementNS(svgns, 'polygon');
-    polygon.setAttribute('points', "0,0 0," + foHeight + " " + foWidth +
-        "," + foHeight + " " + foWidth + ",0 " + (t) + ",0 " + tip.w +
-        "," + (-tip.h) + " " + (t/2) + ",0");
-    polygon.setAttribute('height', foHeight + tip.h);
-    polygon.style.height = foHeight + tip.h;
-    polygon.setAttribute('width', foWidth);
-    polygon.setAttribute('fill', '#D8D8D8');
-    polygon.setAttribute('opacity', 0.75);
-    polygon.setAttribute('transform', 'translate(' + tooltipX + ',' +
-          tooltipY + ')');
-    g.insertBefore(polygon, fo);
-  }
-
-  function cloneElements(num) {
-    var width = element.clientWidth;
-    var height = element.clientHeight;
+  cloneElements() {
+    var width = this.element.clientWidth;
+    var height = this.element.clientHeight;
     var container = document.createElement('div');
-    container.id = 'clonedElement';
-    container.style.top = element.offsetTop + 'px';
+    container.id = this.name + '-clonedElement';
+    container.style.top = this.element.offsetTop + 'px';
     container.style.width = width + 'px';
     container.style.height = height + 'px';
     container.classList.add('composited');
     container.classList.add('clonedElement');
-    document.body.appendChild(container);
+    //document.body.appendChild(container);
+    this.element.parentNode.appendChild(container);
 
-    for (var i = 1; i <= num; ++i) {
+    for (var i = 1; i <= this.num; ++i) {
       var div = document.createElement('div');
-      div.id = 'b' + i;
+      div.id = this.name + '-b' + i;
       div.classList.add('composited');
       div.classList.add('clonedElement');
       div.style.opacity = 0.01;
 
-      var shadowRoot = getShadowRoot(div);
+      var shadowRoot = this.getShadowRoot(div);
 
-      var template = document.querySelector('#animatedDoc');
+      var template = document.querySelector('#' + this.name + '-template');
       var clone = document.importNode(template.content, true);
 
       var filterStdDev = 4 * (i - 1);
-      clone.querySelector('.animated-blur').style.filter =
+      clone.childNodes[1].style.filter =
           'blur(' + filterStdDev + 'px)';
       shadowRoot.appendChild(clone);
 
@@ -206,81 +107,53 @@ function initializeAnimatedBlur(element) {
     }
   }
 
-  function displayCurrentImg() {
-    currentImg = currentBlurEvent.target.cloneNode(true);
-    currentImg.setAttribute('class', 'selected temporary composited');
-    currentImg.style.left = currentBlurEvent.target.x + 'px';
-    currentImg.style.top = currentBlurEvent.target.y + 'px';
-    document.body.insertBefore(currentImg,
-        document.getElementById('toolTip'));
+  update() {
+    if (this.initialized)
+      return;
+    document.body.classList.add('bodyStyle');
+    this.setupKeyFrames();
+    this.createTemplate();
+    this.cloneElements();
+    // Create a compositing layer for the animated blur element after it
+    // gets cloned.
+    this.element.classList.add('composited');
+    this.initialized = true;
   }
 
-  function reset() {
-    if (currentTooltip) {
-      currentTooltip.remove();
-      currentTooltip = null;
-      document.getElementById('toolTip').style.animation = '';
+  play(mode) {
+    if(mode == blurMode.STANDBY) return;
+    for (var i = 0; i < this.num; ++i) {
+      var div = mode > 0 ? document.body.querySelector('#' + this.name + '-b' + (i + 1))
+          : document.body.querySelector('#' + this.name + '-b' + (this.num - i));
+      div.style.animation = this.name + '-b' + (i + 1) + '-anim ' + this.duration + 'ms forwards linear';
+      // opacity 1 would cause delay on Safari.
+      div.style.opacity = 0.99;
     }
-
-    if (currentImg) {
-      currentImg.remove();
-      currentImg = null;
+    if (mode == blurMode.UNBLUR) {
+      this.element.style.animation =
+          this.name + '-b' + this.num + '-anim ' + this.duration + 'ms forwards linear';
+    } else {
+      this.element.style.animation =
+          this.name + '-b1-anim ' + this.duration + 'ms forwards linear';
     }
-
-    //var animatedElements = document.body.querySelectorAll('.animated-blur');
-    //for (var i = 0; i < animatedElements.length; ++i) {
-    //  animatedElements[i].removeAttribute('style');
-    //}
   }
 
-  function prepareToBlur() {
-    displayCurrentImg();
-    displayToolTips(inOrOut);
+  dispose() {
+    document.getElementById(this.name + '-clonedElement').remove();
+    document.getElementById(this.name + '-template').remove();
+    this.element.classList.remove('composited');
+    this.element.style.removeProperty('animation');
+    if (this.element.style.length == 0) {
+      this.element.removeAttribute('style');
+    }
+    this.initialized = false;
   }
 
-  function updateOnResize() {
+  resize() {
     var elements = document.body.querySelectorAll('.clonedElement');
     for (var i = 0; i < elements.length; ++i) {
-      elements[i].style.width = element.clientWidth + 'px';
-      elements[i].style.height = element.clientHeight + 'px';
-    }
-
-    // No need to proceed if there is no blur event
-    if (!currentBlurEvent) return;
-
-    var temporaries = document.body.querySelectorAll('.temporary');
-    for (var i = 0; i < temporaries.length; ++i) {
-      temporaries[i].style.left = currentBlurEvent.target.x + 'px';
-      temporaries[i].style.top = currentBlurEvent.target.y + 'px';
-    }
-    if (currentTooltip) {
-      currentTooltip.remove();
-      currentTooltip = null;
-      displayToolTips(inOrOut);
+      elements[i].style.width = this.element.clientWidth + 'px';
+      elements[i].style.height = this.element.clientHeight + 'px';
     }
   }
-
-  window.onresize = function() {
-    updateOnResize();
-  }
-
-  document.onclick = function(e) {
-    if (!animatedBlur) {
-      reset();
-      if (e.target.localName == 'img') {
-        inOrOut = 1;
-        animatedBlur = true;
-        currentBlurEvent = e;
-        prepareToBlur();
-      } else {
-        inOrOut = 0;
-      }
-    } else {
-      inOrOut *= -1;
-      animatedBlur = false;
-      currentBlurEvent = null;
-    }
-    startBlur(inOrOut);
-  }
-
 }
