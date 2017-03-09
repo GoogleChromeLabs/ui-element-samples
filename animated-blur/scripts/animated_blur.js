@@ -75,6 +75,7 @@ class AnimatedBlur {
     var container = document.createElement('div');
     container.id = this.name + '-clonedElement';
     container.style.top = this.element.offsetTop + 'px';
+    container.style.left = this.element.offsetLeft + 'px';
     container.style.width = width + 'px';
     container.style.height = height + 'px';
     container.classList.add('composited');
@@ -155,5 +156,13 @@ class AnimatedBlur {
       elements[i].style.width = this.element.clientWidth + 'px';
       elements[i].style.height = this.element.clientHeight + 'px';
     }
+  }
+
+  valid(e) {
+    for (var element of e.path) {
+      if (element == this.element)
+        return true;
+    }
+    return false;
   }
 }

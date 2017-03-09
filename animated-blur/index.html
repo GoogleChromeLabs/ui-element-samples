@@ -23,13 +23,6 @@ html {
   -ms-text-size-adjust: none;
 }
 
-/*
-body {
-  background: 0 -100px repeat-x
-  url(./images/bg_gallery.png) #4F191A;
-}
-*/
-
 .bodyStyle {
   /*
   Necessary for Firefox
@@ -46,6 +39,13 @@ body {
 
 .animated-blur {
   position: relative;
+}
+
+.separator {
+  height: 60px;
+  font-size: 30px;
+  padding: 10px;
+  color: blue;
 }
 
 svg {
@@ -113,19 +113,36 @@ td {
   padding: 20px;
 }
 
-figcaption {
+#gallery figcaption {
   display: none;
 }
+
+#transition img {
+  position: absolute;
+}
+
 </style>
 
 <body>
-  <div style='border: 5px solid blue; font-size: 38px; padding: 20px;'>
-    This line and the following img won't be blurred.
+  <div class='separator'>Demo 1: Hover on the image of Google logo</div>
+  <div id='transition'>
+    <img id='transition-fade-in' src='./images/old.png'/>
+    <img id='transition-fade-out' src='./images/new.png'/>
   </div>
-  <div>
-    <img src="./images/bg_gallery.png" style='border: 5px solid red; width: 100%; height: 200px;'/>
+  <div class='separator'></div>
+  <div class='separator'></div>
+  <div class='separator'>Demo 2: Hover on any of the following blurred images</div>
+  <div id='carousel'>
+    <img src="./images/chrome.png"/>
+    <img src="./images/search.png"/>
+    <img src="./images/photos.png"/>
+    <img src="./images/youtube.png"/>
+    <img src="./images/gmail.png"/>
+    <img src="./images/maps.png"/>
   </div>
-  <div class="animated-blur">
+  <div class='separator'></div>
+  <div class='separator'>Demo 3: Click on one of the following products</div>
+  <div id='gallery'>
     <h1>Google products gallery</h1>
     <p>Browse a comprehensive list of Google products designed to help you work and play, stay organized, get answers, keep in touch, grow your business, and more.</p>
     <table>
@@ -193,153 +210,16 @@ figcaption {
   </div>
 </body>
 <script src="scripts/animated_blur.js"></script>
+<script src="scripts/gallery.js"></script>
+<script src="scripts/transition.js"></script>
+<script src="scripts/carousel.js"></script>
 <script>
-  var blurredElement = document.querySelector('.animated-blur');
-  var blurAnimation = new AnimatedBlur('view', blurredElement, {steps: 4, duration: 1000});
-  blurAnimation.update();
-  var mode = blurMode.STANDBY;
-  var selectedImg = null;
-  var animatedBlur = false;
-  var currentBlurEvent = null;
-  var currentTooltip = null;
-
-  var svgns = "http://www.w3.org/2000/svg";
-  var xhtmlns = "http://www.w3.org/1999/xhtml";
-
-  createTooltipSVG();
-
-  document.onclick = function(e) {
-    if (!animatedBlur) {
-      reset();
-      if (e.target.localName == 'img') {
-        mode = blurMode.BLUR;
-        animatedBlur = true;
-        currentBlurEvent = e;
-      } else {
-        mode = blurMode.STANDBY;
-      }
-    } else {
-      mode *= -1;
-      animatedBlur = false;
-      currentBlurEvent = null;
-    }
-    blurAnimation.play(mode);
-    displaySelectedImg();
-    displayTooltip();
-  }
-
+  var blurredElements = document.querySelectorAll('.animated-blur');
   window.onresize = function() {
-    blurAnimation.resize();
-    if (!currentBlurEvent) return;
-    var temporaries = document.body.querySelectorAll('.temporary');
-    for (var i = 0; i < temporaries.length; ++i) {
-      temporaries[i].style.left = currentBlurEvent.target.x + 'px';
-      temporaries[i].style.top = currentBlurEvent.target.y + 'px';
-    }
-    if (currentTooltip) {
-      document.getElementById('toolTip').remove();
-      createTooltipSVG();
-      displayTooltip(mode);
+    for (var blurredElement of blurredElements) {
+      blurredElement.resize();
     }
   }
-
-  function displaySelectedImg() {
-    if (mode == blurMode.STANDBY) return;
-    if (selectedImg) {
-      selectedImg.style.animation = 'view-b1-anim 1s linear forwards';
-      return;
-    }
-    selectedImg = currentBlurEvent.target.cloneNode(true);
-    selectedImg.setAttribute('class', 'selected temporary composited');
-    // target image in firefox doesn't have correct x and y?
-    selectedImg.style.left = currentBlurEvent.target.x + 'px';
-    selectedImg.style.top = currentBlurEvent.target.y + 'px';
-    document.body.insertBefore(selectedImg,
-        document.getElementById('toolTip'));
-  }
-
-  function reset() {
-    if (selectedImg) {
-      selectedImg.remove();
-      selectedImg = null;
-    }
-    if (currentTooltip) {
-      currentTooltip.remove();
-      currentTooltip = null;
-      document.getElementById('toolTip').style.animation = '';
-    }
-  }
-
-  function createTooltipSVG() {
-    var width = blurredElement.clientWidth;
-    var height = blurredElement.clientHeight;
-
-    var svg = document.createElementNS(svgns, 'svg');
-    svg.id = 'toolTip';
-    svg.style.top = blurredElement.offsetTop + 'px';
-    svg.style.left = blurredElement.offsetLeft + 'px';
-    svg.setAttribute('width', width);
-    svg.setAttribute('height', height);
-    svg.setAttribute('class', 'composited');
-    document.body.appendChild(svg);
-  }
-
-  function displayTooltip() {
-    var svg = document.body.querySelector('#toolTip');
-    if (mode == blurMode.UNBLUR) {
-      svg.style.animation = 'view-b1-anim 1s linear forwards';
-    }
-    if (mode == blurMode.STANDBY || !currentBlurEvent) return;
-    if (currentBlurEvent.target.nextElementSibling.localName != 'figcaption') return;
-    var g = document.createElementNS(svgns, 'g');
-    currentTooltip = g;
-    svg.appendChild(g);
-    var foWidth = 300;
-    // TODO: Doesn't work with window resize
-    var anchor = {'w': currentBlurEvent.layerX, 'h': currentBlurEvent.layerY};
-    var t = 50, k = 15;
-    var tip = {'w': (3/4 * t), 'h': k};
-    var fo = document.createElementNS(svgns, 'foreignObject');
-    var tooltipX = anchor.w - tip.w + foWidth > blurredElement.clientWidth ?
-        blurredElement.clientWidth - foWidth - tip.w : anchor.w - tip.w;
-
-    fo.setAttribute('x', tooltipX);
-    fo.setAttribute('width', foWidth);
-    fo.setAttribute('class', 'svg-tooltip');
-    g.appendChild(fo);
-    var div = document.createElementNS(xhtmlns, 'div');
-    div.setAttribute('class', 'tooltip');
-    fo.appendChild(div);
-    var p = document.createElement('p');
-    p.setAttribute('class', 'lead');
-    p.innerHTML = currentBlurEvent.target.alt;
-    div.appendChild(p);
-    p = document.createElement('p');
-
-    p.innerHTML = currentBlurEvent.target.nextElementSibling.innerText;
-    div.appendChild(p);
-    //TODO: getBoundingClientRect doesn't work properly in Firefox
-    //var foHeight = div.getBoundingClientRect().height;
-    var foHeight = 150;
-    fo.setAttribute('height', foHeight);
-    var tooltipY = anchor.h + tip.h + foHeight > blurredElement.clientHeight ?
-    blurredElement.clientHeight - foHeight - tip.h : anchor.h + tip.h;
-    fo.setAttribute('y', tooltipY);
-    var polygon = document.createElementNS(svgns, 'polygon');
-    polygon.setAttribute('points', "0,0 0," + foHeight + " " + foWidth +
-        "," + foHeight + " " + foWidth + ",0 " + (t) + ",0 " + tip.w +
-        "," + (-tip.h) + " " + (t/2) + ",0");
-    polygon.setAttribute('height', foHeight + tip.h);
-    polygon.style.height = foHeight + tip.h;
-    polygon.setAttribute('width', foWidth);
-    polygon.setAttribute('fill', '#D8D8D8');
-    polygon.setAttribute('opacity', 0.75);
-    polygon.setAttribute('transform', 'translate(' + tooltipX + ',' +
-          tooltipY + ')');
-    g.insertBefore(polygon, fo);
-  }
-
 </script>
 </head>
-
 </html>
