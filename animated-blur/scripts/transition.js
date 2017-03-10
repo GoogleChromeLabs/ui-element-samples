@@ -15,31 +15,33 @@
  *
  */
 
-var fadeOut = document.querySelector('#transition-fade-out');
-fadeOut.classList.add('animated-blur');
-var fadeOutAnimation = new AnimatedBlur('fadeOut', fadeOut, {steps: 4, duration: 500});
-fadeOutAnimation.update();
-
-var fadeIn = document.querySelector('#transition-fade-in');
-fadeIn.style.opacity = 0.01;
-fadeIn.classList.add('animated-blur');
-var fadeInAnimation = new AnimatedBlur('fadeIn', fadeIn, {steps: 4, duration: 500});
-fadeInAnimation.update();
-
-fadeOut.onmouseenter = function() {
-  fadeOutAnimation.play(blurMode.BLUR);
-  fadeInAnimation.play(blurMode.UNBLUR);
-}
-
-fadeOut.onmouseleave = function() {
-  fadeInAnimation.play(blurMode.BLUR);
-  fadeOutAnimation.play(blurMode.UNBLUR);
-}
-
-fadeOut.resize = function() {
-  fadeOutAnimation.resize();
-}
-
-fadeIn.resize = function() {
-  fadeInAnimation.resize();
+function initializeTransition() {
+  var fadeOut = document.querySelector('#transition-fade-out');
+  fadeOut.classList.add('animated-blur');
+  var fadeOutAnimation = new AnimatedBlur('fadeOut', fadeOut, {steps: 4, duration: 500});
+  fadeOutAnimation.update();
+  
+  var fadeIn = document.querySelector('#transition-fade-in');
+  fadeIn.style.opacity = 0.01;
+  fadeIn.classList.add('animated-blur');
+  var fadeInAnimation = new AnimatedBlur('fadeIn', fadeIn, {steps: 4, duration: 500});
+  fadeInAnimation.update();
+  
+  fadeOut.onmouseenter = function() {
+    fadeOutAnimation.play(blurMode.BLUR);
+    fadeInAnimation.play(blurMode.UNBLUR);
+  }
+  
+  fadeOut.onmouseleave = function() {
+    fadeInAnimation.play(blurMode.BLUR);
+    fadeOutAnimation.play(blurMode.UNBLUR);
+  }
+  
+  fadeOut.resize = function() {
+    fadeOutAnimation.resize();
+  }
+  
+  fadeIn.resize = function() {
+    fadeInAnimation.resize();
+  }
 }

@@ -218,12 +218,17 @@ td {
 <script src="scripts/transition.js"></script>
 <script src="scripts/carousel.js"></script>
 <script>
-  var blurredElements = document.querySelectorAll('.animated-blur');
-  window.onresize = function() {
-    for (var blurredElement of blurredElements) {
-      blurredElement.resize();
+  document.addEventListener("DOMContentLoaded", function(event) {
+    initializeGallery();
+    initializeTransition();
+    initializeCarousel();
+    var blurredElements = document.querySelectorAll('.animated-blur');
+    window.onresize = function() {
+      for (var blurredElement of blurredElements) {
+        blurredElement.resize();
+      }
     }
-  }
+  });
 </script>
 </head>
 </html>
