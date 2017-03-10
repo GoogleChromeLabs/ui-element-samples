@@ -72,7 +72,8 @@ class AnimatedBlur {
     container.style.height = height + 'px';
     container.classList.add('composited');
     container.classList.add('clonedElement');
-    this.element.parentNode.appendChild(container);
+    this.element.parentNode.insertBefore(container,
+        this.element.nextSibling);
 
     var filterStdDev = 2;
     for (var i = 1; i <= this.num; ++i) {

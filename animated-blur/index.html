@@ -223,7 +223,8 @@ td {
       initializeGallery();
       initializeTransition();
       initializeCarousel();
-      var blurredElements = document.querySelectorAll('.animated-blur');
+      var blurredElements =
+          document.querySelectorAll('.animated-blur.composited');
       window.onresize = function() {
         for (var i = 0; i < blurredElements.length; ++i) {
           blurredElements[i].resize();
