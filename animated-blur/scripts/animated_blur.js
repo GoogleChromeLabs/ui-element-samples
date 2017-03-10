@@ -40,14 +40,6 @@ class AnimatedBlur {
     document.body.appendChild(template);
   }
 
-  getShadowRoot(div) {
-    const supportsShadowDOMV1 = !!HTMLElement.prototype.attachShadow;
-    if (supportsShadowDOMV1)
-      return div.attachShadow({ mode: 'closed' });
-    else
-      return div.createShadowRoot();
-  }
-
   setupKeyFrames() {
     for (var id = 0; id < this.num; ++id) {
       var keyframes = '@keyframes ' + this.name + '-b' + (id + 1)  + '-anim {';
@@ -80,9 +72,9 @@ class AnimatedBlur {
     container.style.height = height + 'px';
     container.classList.add('composited');
     container.classList.add('clonedElement');
-    //document.body.appendChild(container);
     this.element.parentNode.appendChild(container);
 
+    var filterStdDev = 2;
     for (var i = 1; i <= this.num; ++i) {
       var div = document.createElement('div');
       div.id = this.name + '-b' + i;
@@ -90,20 +82,25 @@ class AnimatedBlur {
       div.classList.add('clonedElement');
       div.style.opacity = 0.01;
 
-      var shadowRoot = this.getShadowRoot(div);
-
       var template = document.querySelector('#' + this.name + '-template');
       var clone = document.importNode(template.content, true);
 
-      var filterStdDev = 4 * (i - 1);
-      clone.childNodes[1].style.filter =
-          'blur(' + filterStdDev + 'px)';
-      shadowRoot.appendChild(clone);
+      if (i == 1) {
+        clone.childNodes[1].style.filter = 'blur(0px)';
+      } else {
+        clone.childNodes[1].style.filter =
+            'blur(' + filterStdDev + 'px)';
+        filterStdDev *= 2;
+      }
 
-      // Without using template
-      //var clonedElement = element.cloneNode(true);
-      //clonedElement.style.filter = 'blur(' + filterStdDev + 'px)';
-      //shadowRoot.appendChild(clonedElement);
+      const supportsShadowDOMV1 = !!HTMLElement.prototype.attachShadow;
+      if (supportsShadowDOMV1) {
+        var shadowRoot = div.attachShadow({ mode: 'closed' });
+        shadowRoot.appendChild(clone);
+      } else {
+        div.appendChild(clone);
+      }
+
       container.appendChild(div);
     }
   }

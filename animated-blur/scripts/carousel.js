@@ -20,22 +20,23 @@ function initializeCarousel() {
   var counter = 1;
   var animations = [];
   var imgs = [];
-  
+
   for (var i = 0; i < carousel.children.length; ++i) {
     // Necessary break because cloned elements are appended to carousel.
     var img = carousel.children[i];
     if (img.classList.contains('clonedElement')) break;
     img.classList.add('animated-blur');
     imgs.push(img);
-    var animation = new AnimatedBlur('carousel-' + counter++, img, {steps: 4, duration: 100});
+    var animation = new AnimatedBlur('carousel-' + counter++, img,
+        {steps: 5, duration: 100});
     animation.update();
     animations.push(animation);
     animation.play(blurMode.BLUR);
-  
+
     img.resize = function() {
       animations[imgs.indexOf(this)].resize();
     }
-  
+
     img.onmouseenter = function() {
       animations[imgs.indexOf(this)].play(blurMode.UNBLUR);
     }
