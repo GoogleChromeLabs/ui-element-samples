@@ -29,7 +29,6 @@ for (var i = 0; i < carousel.children.length; ++i) {
   var animation = new AnimatedBlur('carousel-' + counter++, img, {steps: 4, duration: 100});
   animation.update();
   animations.push(animation);
-  animation.play(blurMode.BLUR);
 
   img.resize = function() {
     animations[imgs.indexOf(this)].resize();
@@ -43,3 +42,6 @@ for (var i = 0; i < carousel.children.length; ++i) {
   }
 }
 
+for (var i = 0; i < animations.length; ++i) {
+  animations[i].play(blurMode.BLUR);
+}
