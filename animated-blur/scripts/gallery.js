@@ -22,7 +22,6 @@ function initializeGallery() {
       {steps: 5, duration: 500});
   blurAnimation.update();
   var mode = blurMode.STANDBY;
-  var selectedImg = null;
   var animatedBlur = false;
   var currentBlurEvent = null;
   var currentTooltip = null;
@@ -48,7 +47,6 @@ function initializeGallery() {
       currentBlurEvent = null;
     }
     blurAnimation.play(mode);
-    displaySelectedImg();
     displayTooltip();
   }
 
@@ -67,25 +65,7 @@ function initializeGallery() {
     }
   }
 
-  function displaySelectedImg() {
-    if (mode == blurMode.STANDBY) return;
-    if (selectedImg) {
-      selectedImg.style.animation = 'view-b1-anim 1s linear forwards';
-      return;
-    }
-    selectedImg = currentBlurEvent.target.cloneNode(true);
-    selectedImg.setAttribute('class', 'selected temporary composited');
-    selectedImg.style.left = currentBlurEvent.target.x + 'px';
-    selectedImg.style.top = currentBlurEvent.target.y + 'px';
-    document.body.insertBefore(selectedImg,
-        document.getElementById('toolTip'));
-  }
-
   function reset() {
-    if (selectedImg) {
-      selectedImg.remove();
-      selectedImg = null;
-    }
     if (currentTooltip) {
       currentTooltip.remove();
       currentTooltip = null;
