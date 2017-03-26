@@ -1,19 +1,19 @@
 /**
- *
- * Copyright 2017 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+*
+* Copyright 2017 Google Inc. All rights reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 'use strict';
 
@@ -26,21 +26,25 @@ class Menu {
 
     this._expanded = true;
     this._animate = false;
-    this._refreshRate = 60;
+    this._refreshRate;
     this._collapsed;
 
     this.expand = this.expand.bind(this);
     this.collapse = this.collapse.bind(this);
     this.toggle = this.toggle.bind(this);
 
-    this._calculateScales();
-    this._createEaseAnimations();
-    this._addEventListeners();
+    window.requestIdleCallback(() => {
+      this._getRefreshRate()
+        .then(fps => {
+          this._calculateScales();
+          console.log(`The refresh rate should be ${fps}Hz`)
+          this._createEaseAnimations();
+          this._addEventListeners();
 
-    this.collapse();
-    this.activate();
-
-    this._getRefreshRate();
+          this.collapse();
+          this.activate();
+      });
+    });
   }
 
   activate () {
@@ -94,13 +98,15 @@ class Menu {
   }
 
   _getRefreshRate() {
-    window.requestIdleCallback(() => {
-      requestAnimationFrame(f1 => {
-        requestAnimationFrame(f2 => {
-          const ft = f2 - f1;
-          const fps = Math.round(1 / ft * 1000);
-          if (fps <= 60) return;
-          this._refreshRate = fps;
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(f1 => {
+          requestAnimationFrame(f2 => {
+            const ft = f2 - f1;
+            const fps = Math.round(1 / ft * 1000);
+            this._refreshRate = fps;
+            resolve(this._refreshRate);
+          });
         });
       });
     });
@@ -152,6 +158,7 @@ class Menu {
     const menuExpandContentsAnimation = [];
     const menuCollapseAnimation = [];
     const menuCollapseContentsAnimation = [];
+
     for (let i = 0; i <= 100; i+= (100 / this._refreshRate)) {
       const step = this._ease(i / 100);
       const startX = this._collapsed.x;
@@ -185,62 +192,62 @@ class Menu {
     }
 
     menuEase.textContent = `
-      @keyframes menuExpandAnimation {
-        ${menuExpandAnimation.join('')}
-      }
+    @keyframes menuExpandAnimation {
+      ${menuExpandAnimation.join('')}
+    }
 
-      @keyframes menuExpandContentsAnimation {
-        ${menuExpandContentsAnimation.join('')}
-      }
+    @keyframes menuExpandContentsAnimation {
+      ${menuExpandContentsAnimation.join('')}
+    }
 
-      @keyframes menuCollapseAnimation {
-        ${menuCollapseAnimation.join('')}
-      }
+    @keyframes menuCollapseAnimation {
+      ${menuCollapseAnimation.join('')}
+    }
 
-      @keyframes menuCollapseContentsAnimation {
-        ${menuCollapseContentsAnimation.join('')}
-      }`;
+    @keyframes menuCollapseContentsAnimation {
+      ${menuCollapseContentsAnimation.join('')}
+    }`;
 
     document.head.appendChild(menuEase);
     return menuEase;
   }
 
   _append ({
-        i,
-        step,
-        startX,
-        startY,
-        endX,
-        endY,
-        outerAnimation,
-        innerAnimation}=opts) {
+    i,
+    step,
+    startX,
+    startY,
+    endX,
+    endY,
+    outerAnimation,
+    innerAnimation}=opts) {
 
-    const xScale = startX + (endX - startX) * step;
-    const yScale = startY + (endY - startY) * step;
+      const xScale = startX + (endX - startX) * step;
+      const yScale = startY + (endY - startY) * step;
 
-    const invScaleX = 1 / xScale;
-    const invScaleY = 1 / yScale;
+      const invScaleX = 1 / xScale;
+      const invScaleY = 1 / yScale;
 
-    outerAnimation.push(`
+      outerAnimation.push(`
       ${i}% {
         transform: scale(${xScale}, ${yScale});
       }`);
 
-    innerAnimation.push(`
+      innerAnimation.push(`
       ${i}% {
         transform: scale(${invScaleX}, ${invScaleY});
       }`);
+    }
+
+    _clamp (value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    _ease (v, pow=4) {
+      v = this._clamp(v, 0, 1);
+
+      return 1 - Math.pow(1 - v, pow);
+    }
   }
 
-  _clamp (value, min, max) {
-    return Math.max(min, Math.min(max, value));
-  }
-
-  _ease (v, pow=4) {
-    v = this._clamp(v, 0, 1);
-
-    return 1 - Math.pow(1 - v, pow);
-  }
-}
-
-new Menu()
+  new Menu()
