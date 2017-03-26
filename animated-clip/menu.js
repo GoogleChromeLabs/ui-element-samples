@@ -26,6 +26,7 @@ class Menu {
 
     this._expanded = true;
     this._animate = false;
+    this._refreshRate = 60;
     this._collapsed;
 
     this.expand = this.expand.bind(this);
@@ -38,6 +39,8 @@ class Menu {
 
     this.collapse();
     this.activate();
+
+    this._getRefreshRate();
   }
 
   activate () {
@@ -57,7 +60,7 @@ class Menu {
 
     this._menu.style.transform = `scale(${x}, ${y})`;
     this._menuContents.style.transform = `scale(${invX}, ${invY})`;
-    
+
     if (!this._animate) {
       return;
     }
@@ -73,7 +76,7 @@ class Menu {
 
     this._menu.style.transform = `scale(1, 1)`;
     this._menuContents.style.transform = `scale(1, 1)`;
-      
+
     if (!this._animate) {
       return;
     }
@@ -88,6 +91,20 @@ class Menu {
     }
 
     this.expand();
+  }
+
+  _getRefreshRate() {
+    window.requestIdleCallback(() => {
+      requestAnimationFrame(f1 => {
+        requestAnimationFrame(f2 => {
+          const ft = f2 - f1;
+          const fps = Math.round(1 / ft * 1000);
+          console.log(`${fps} Hz`);
+          if (fps <= 60) return;
+          this._refreshRate = fps;
+        });
+      });
+    });
   }
 
   _addEventListeners () {
@@ -136,8 +153,8 @@ class Menu {
     const menuExpandContentsAnimation = [];
     const menuCollapseAnimation = [];
     const menuCollapseContentsAnimation = [];
-    for (let i = 0; i <= 100; i++) {
-      const step = this._ease(i/100);
+    for (let i = 0; i <= 100; i+= (100 / this._refreshRate)) {
+      const step = this._ease(i / 100);
       const startX = this._collapsed.x;
       const startY = this._collapsed.y;
       const endX = 1;
@@ -176,7 +193,7 @@ class Menu {
       @keyframes menuExpandContentsAnimation {
         ${menuExpandContentsAnimation.join('')}
       }
-      
+
       @keyframes menuCollapseAnimation {
         ${menuCollapseAnimation.join('')}
       }
@@ -192,11 +209,11 @@ class Menu {
   _append ({
         i,
         step,
-        startX, 
-        startY, 
-        endX, 
-        endY, 
-        outerAnimation, 
+        startX,
+        startY,
+        endX,
+        endY,
+        outerAnimation,
         innerAnimation}=opts) {
 
     const xScale = startX + (endX - startX) * step;
