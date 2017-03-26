@@ -99,7 +99,6 @@ class Menu {
         requestAnimationFrame(f2 => {
           const ft = f2 - f1;
           const fps = Math.round(1 / ft * 1000);
-          console.log(`${fps} Hz`);
           if (fps <= 60) return;
           this._refreshRate = fps;
         });
