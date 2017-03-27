@@ -39,13 +39,13 @@ class Menu {
     this._getRefreshRate()
       .then(_ => {
         this._calculateScales();
-        this._getDuration();
         this._createEaseAnimations();
         this._addEventListeners();
 
         this.collapse();
         this.activate();
     });
+
   }
 
   activate () {
@@ -99,30 +99,24 @@ class Menu {
   }
 
   _getRefreshRate() {
-    const rafPromise = _ => new Promise(requestAnimationFrame);
-    const idlePromise = _ => new Promise(requestIdleCallback);
+    const rafPromise = _ => new Promise(window.requestAnimationFrame);
+    const idlePromise = _ => new Promise(window.requestIdleCallback);
 
     let f1, f2;
 
     return new Promise(resolve => {
       idlePromise()
       .then(_ => rafPromise())
+      .then(_ => rafPromise())
       .then(frame => {f1 = frame; return rafPromise();})
       .then(frame => {f2 = frame; return rafPromise();})
       .then(_ => {
-        const ft = f2 - f1;
-        const fps = Math.ceil(1000 / ft);
-        this._refreshRate = fps;
-        this._frameTime = ft;
-        console.log(`Refresh rate should be ${fps}Hz`);
+        this._frameTime = f2 - f1;
+        this._refreshRate = Math.round(1000 / this._frameTime);
+        console.log(`Refresh rate should be ${this._refreshRate}Hz`);
         resolve();
       });
     });
-  }
-
-  _getDuration() {
-    this._duration = window.getComputedStyle(this._menu).animationDuration
-      .slice(0, -1) * 1000;
   }
 
   _addEventListeners () {
@@ -164,6 +158,11 @@ class Menu {
       return menuEase;
     }
 
+    this._duration = window.getComputedStyle(this._menu).animationDuration
+      .slice(0, -1) * 1000;
+    this._nFrames = Math.round(this._duration / this._frameTime);
+    console.log(`Total of ${this._nFrames} frames`);
+
     menuEase = document.createElement('style');
     menuEase.classList.add('menu-ease');
 
@@ -172,10 +171,11 @@ class Menu {
     const menuCollapseAnimation = [];
     const menuCollapseContentsAnimation = [];
 
-    const frameIncrement = 100 / Math.ceil(this._duration / this._frameTime);
+    const percentIncrement = 100 / this._nFrames;
 
-    for (let i = 0; i <= 100; i+= frameIncrement) {
-      const step = this._ease(i / 100);
+    for (let i = 0; i <= this._nFrames; i++) {
+      const step = this._ease(i / this._nFrames).toFixed(5);
+      const percentage = (i * percentIncrement).toFixed(5);
       const startX = this._collapsed.x;
       const startY = this._collapsed.y;
       const endX = 1;
@@ -183,7 +183,7 @@ class Menu {
 
       // Expand animation.
       this._append({
-        i,
+        percentage,
         step,
         startX: this._collapsed.x,
         startY: this._collapsed.y,
@@ -195,7 +195,7 @@ class Menu {
 
       // Collapse animation.
       this._append({
-        i,
+        percentage,
         step,
         startX: 1,
         startY: 1,
@@ -228,7 +228,7 @@ class Menu {
   }
 
   _append ({
-    i,
+    percentage,
     step,
     startX,
     startY,
@@ -237,19 +237,19 @@ class Menu {
     outerAnimation,
     innerAnimation}=opts) {
 
-      const xScale = startX + (endX - startX) * step;
-      const yScale = startY + (endY - startY) * step;
+      const xScale = (startX + (endX - startX) * step).toFixed(5);
+      const yScale = (startY + (endY - startY) * step).toFixed(5);
 
-      const invScaleX = 1 / xScale;
-      const invScaleY = 1 / yScale;
+      const invScaleX = (1 / xScale).toFixed(5);
+      const invScaleY = (1 / yScale).toFixed(5);
 
       outerAnimation.push(`
-      ${i}% {
+      ${percentage}% {
         transform: scale(${xScale}, ${yScale});
       }`);
 
       innerAnimation.push(`
-      ${i}% {
+      ${percentage}% {
         transform: scale(${invScaleX}, ${invScaleY});
       }`);
     }
