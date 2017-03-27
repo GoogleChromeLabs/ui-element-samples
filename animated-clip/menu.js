@@ -111,11 +111,7 @@ class Menu {
       .then(frame => {f2 = frame; return rafPromise();})
       .then(_ => {
         const ft = f2 - f1;
-<<<<<<< HEAD
         const fps = Math.ceil(1000 / ft);
-=======
-        const fps = Math.ceil(1 / ft * 1000);
->>>>>>> deb9b051634447ca1839a9a0526c4497069be8ff
         this._refreshRate = fps;
         this._frameTime = ft;
         console.log(`Refresh rate should be ${fps}Hz`);
