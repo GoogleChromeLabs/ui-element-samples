@@ -99,27 +99,30 @@ class Menu {
   }
 
   _getRefreshRate() {
+    const rafPromise = _ => new Promise(requestAnimationFrame);
+    const idlePromise = _ => new Promise(requestIdleCallback);
+
+    let f1, f2;
+
     return new Promise(resolve => {
-      requestIdleCallback(_ => {
-        requestAnimationFrame(_ => {
-          requestAnimationFrame(f1 => {
-            requestAnimationFrame(f2 => {
-              const ft = f2 - f1;
-              const fps = Math.ceil(1 / ft * 1000);
-              this._refreshRate = fps;
-              this._frameTime = ft;
-              console.log(`Refresh rate should be ${fps}Hz`);
-              resolve();
-            });
-          });
-        });
+      idlePromise()
+      .then(_ => rafPromise())
+      .then(frame => {f1 = frame; return rafPromise();})
+      .then(frame => {f2 = frame; return rafPromise();})
+      .then(_ => {
+        const ft = f2 - f1;
+        const fps = Math.ceil(1000 / ft);
+        this._refreshRate = fps;
+        this._frameTime = ft;
+        console.log(`Refresh rate should be ${fps}Hz`);
+        resolve();
       });
     });
   }
 
   _getDuration() {
-    const duration = window.getComputedStyle(this._menu).animationDuration;
-    this._duration = duration.replace(/[^0-9$.,]/g, '') * 1000;
+    this._duration = window.getComputedStyle(this._menu).animationDuration
+      .slice(0, -1) * 1000;
   }
 
   _addEventListeners () {
