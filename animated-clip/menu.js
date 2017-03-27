@@ -26,6 +26,7 @@ class Menu {
 
     this._expanded = true;
     this._animate = false;
+    this._duration;
     this._refreshRate;
     this._collapsed;
 
@@ -34,10 +35,11 @@ class Menu {
     this.toggle = this.toggle.bind(this);
 
     window.requestIdleCallback(() => {
+      // promisify to give it some breathing space
       this._getRefreshRate()
-        .then(fps => {
+        .then(() => {
           this._calculateScales();
-          console.log(`The refresh rate should be ${fps}Hz`)
+          this._getDuration();
           this._createEaseAnimations();
           this._addEventListeners();
 
@@ -105,11 +107,17 @@ class Menu {
             const ft = f2 - f1;
             const fps = Math.round(1 / ft * 1000);
             this._refreshRate = fps;
-            resolve(this._refreshRate);
+            this._frameTime = ft;
+            resolve();
           });
         });
       });
     });
+  }
+
+  _getDuration() {
+    const duration = window.getComputedStyle(this._menu).animationDuration;
+    this._duration = duration.replace(/[^0-9$.,]/g, '') * 1000;
   }
 
   _addEventListeners () {
@@ -159,7 +167,9 @@ class Menu {
     const menuCollapseAnimation = [];
     const menuCollapseContentsAnimation = [];
 
-    for (let i = 0; i <= 100; i+= (100 / this._refreshRate)) {
+    const frameIncrement = 100 / Math.round(this._duration / this._frameTime);
+
+    for (let i = 0; i <= 100; i+= frameIncrement) {
       const step = this._ease(i / 100);
       const startX = this._collapsed.x;
       const startY = this._collapsed.y;
