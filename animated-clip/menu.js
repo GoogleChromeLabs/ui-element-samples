@@ -28,24 +28,23 @@ class Menu {
     this._animate = false;
     this._duration;
     this._refreshRate;
+    this._frameTime;
     this._collapsed;
 
     this.expand = this.expand.bind(this);
     this.collapse = this.collapse.bind(this);
     this.toggle = this.toggle.bind(this);
 
-    window.requestIdleCallback(() => {
-      // promisify to give it some breathing space
-      this._getRefreshRate()
-        .then(() => {
-          this._calculateScales();
-          this._getDuration();
-          this._createEaseAnimations();
-          this._addEventListeners();
+    // promisify to give it some breathing space
+    this._getRefreshRate()
+      .then(_ => {
+        this._calculateScales();
+        this._getDuration();
+        this._createEaseAnimations();
+        this._addEventListeners();
 
-          this.collapse();
-          this.activate();
-      });
+        this.collapse();
+        this.activate();
     });
   }
 
@@ -101,14 +100,17 @@ class Menu {
 
   _getRefreshRate() {
     return new Promise(resolve => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(f1 => {
-          requestAnimationFrame(f2 => {
-            const ft = f2 - f1;
-            const fps = Math.round(1 / ft * 1000);
-            this._refreshRate = fps;
-            this._frameTime = ft;
-            resolve();
+      requestIdleCallback(_ => {
+        requestAnimationFrame(_ => {
+          requestAnimationFrame(f1 => {
+            requestAnimationFrame(f2 => {
+              const ft = f2 - f1;
+              const fps = Math.ceil(1 / ft * 1000);
+              this._refreshRate = fps;
+              this._frameTime = ft;
+              console.log(`Refresh rate should be ${fps}Hz`);
+              resolve();
+            });
           });
         });
       });
@@ -167,7 +169,7 @@ class Menu {
     const menuCollapseAnimation = [];
     const menuCollapseContentsAnimation = [];
 
-    const frameIncrement = 100 / Math.round(this._duration / this._frameTime);
+    const frameIncrement = 100 / Math.ceil(this._duration / this._frameTime);
 
     for (let i = 0; i <= 100; i+= frameIncrement) {
       const step = this._ease(i / 100);
