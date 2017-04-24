@@ -38,7 +38,6 @@ class SCRouter extends HTMLElement {
     if (this._isTransitioningBetweenViews) {
       return Promise.resolve();
     }
-    this._isTransitioningBetweenViews = true;
 
     // Assume that there's no outgoing animation required.
     let outViewPromise = Promise.resolve();
@@ -55,6 +54,7 @@ class SCRouter extends HTMLElement {
 
       // Otherwise animate it out, and take the Promise made by the view as an
       // indicator that the view is done.
+      this._isTransitioningBetweenViews = true;
       outViewPromise = this._currentView.out(data);
     }
 
