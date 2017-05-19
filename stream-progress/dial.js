@@ -19,7 +19,11 @@
 
 class SCDial extends HTMLElement {
   static get SIZE () {
-    return 256;
+    return 256 * window.devicePixelRatio;
+  }
+
+  static get CSS_SIZE () {
+  	return 256;
   }
 
   static get NINETY_DEGREES () {
@@ -38,6 +42,8 @@ class SCDial extends HTMLElement {
 
     this._canvas.width = SCDial.SIZE;
     this._canvas.height = SCDial.SIZE;
+    this._canvas.style.width = `${SCDial.CSS_SIZE}px`;
+    this._canvas.style.height = `${SCDial.CSS_SIZE}px`;
 
     this._percentage = 0;
   }
@@ -97,8 +103,8 @@ class SCDial extends HTMLElement {
 
     // Text label.
     this._ctx.fillStyle = '#777';
-    this._ctx.font = `${SCDial.SIZE * 0.06}px Arial`;
-    this._ctx.fillText('PERCENT', mid, mid + 26);
+    this._ctx.font = `${SCDial.SIZE * 0.06 }px Arial`;
+    this._ctx.fillText('PERCENT', mid, mid + 26 * window.devicePixelRatio );
   }
 
   connectedCallback () {
