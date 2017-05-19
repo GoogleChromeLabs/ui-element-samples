@@ -19,7 +19,7 @@
 
 class SCDial extends HTMLElement {
   static get SIZE () {
-    return 256 * window.devicePixelRatio;
+    return SCDial.CSS_SIZE * window.devicePixelRatio;
   }
 
   static get CSS_SIZE () {
