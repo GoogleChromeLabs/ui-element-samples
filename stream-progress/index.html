@@ -13,34 +13,27 @@ limitations under the License.
 <!doctype html>
 <head>
   <meta charset="utf-8">
-  <meta name="author" content="Paul Lewis" />
+  <meta name="author" content="Paul Lewis and Surma" />
   <meta name="viewport" content="width=device-width">
-  <title>Polymer Summit</title>
-  <link rel="import" async href="flip-switch.html">
+  <title></title>
   <style>
-    html, body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
 
-    body {
-      background: #EEE;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    flip-switch.modal {
-      z-index: 1;
-    }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   </style>
 </head>
 <body>
-  <flip-switch color="#1EA326"></flip-switch>
-  <flip-switch></flip-switch>
+  <sc-dial></sc-dial>
+  <script src="dial.js"></script>
+  <script src="stream.js" type="module"></script>
 </body>
 </html>
