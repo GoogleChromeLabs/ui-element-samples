@@ -28,15 +28,21 @@ limitations under the License.
       pointer-events: none;
       transform-origin: top left;
       overflow: hidden;
+      contain: content;
       border-radius: 3px;
       box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4);
       background: #FFF;
       will-change: transform;
+      animation-duration: 200ms;
+      animation-timing-function: step-end;
     }
 
     .menu__contents {
       transform-origin: top left;
       will-change: transform;
+      contain: content;
+      animation-duration: 200ms;
+      animation-timing-function: step-end;
     }
 
     .menu__toggle {
@@ -78,26 +84,18 @@ limitations under the License.
 
     .menu--expanded {
       animation-name: menuExpandAnimation;
-      animation-duration: 0.2s;
-      animation-timing-function: linear;
     }
 
     .menu__contents--expanded {
       animation-name: menuExpandContentsAnimation;
-      animation-duration: 0.2s;
-      animation-timing-function: linear;
     }
 
     .menu--collapsed {
       animation-name: menuCollapseAnimation;
-      animation-duration: 0.2s;
-      animation-timing-function: linear;
     }
 
     .menu__contents--collapsed {
       animation-name: menuCollapseContentsAnimation;
-      animation-duration: 0.2s;
-      animation-timing-function: linear;
     }
 
   </style>

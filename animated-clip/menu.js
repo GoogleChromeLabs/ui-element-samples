@@ -1,19 +1,19 @@
 /**
- *
- * Copyright 2017 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+*
+* Copyright 2017 Google Inc. All rights reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 'use strict';
 
@@ -26,18 +26,26 @@ class Menu {
 
     this._expanded = true;
     this._animate = false;
+    this._duration;
+    this._refreshRate;
+    this._frameTime;
     this._collapsed;
 
     this.expand = this.expand.bind(this);
     this.collapse = this.collapse.bind(this);
     this.toggle = this.toggle.bind(this);
 
-    this._calculateScales();
-    this._createEaseAnimations();
-    this._addEventListeners();
+    // promisify to give it some breathing space
+    this._getRefreshRate()
+      .then(_ => {
+        this._calculateScales();
+        this._createEaseAnimations();
+        this._addEventListeners();
 
-    this.collapse();
-    this.activate();
+        this.collapse();
+        this.activate();
+    });
+
   }
 
   activate () {
@@ -57,7 +65,7 @@ class Menu {
 
     this._menu.style.transform = `scale(${x}, ${y})`;
     this._menuContents.style.transform = `scale(${invX}, ${invY})`;
-    
+
     if (!this._animate) {
       return;
     }
@@ -73,7 +81,7 @@ class Menu {
 
     this._menu.style.transform = `scale(1, 1)`;
     this._menuContents.style.transform = `scale(1, 1)`;
-      
+
     if (!this._animate) {
       return;
     }
@@ -88,6 +96,27 @@ class Menu {
     }
 
     this.expand();
+  }
+
+  _getRefreshRate() {
+    const rafPromise = _ => new Promise(window.requestAnimationFrame);
+    const idlePromise = _ => new Promise(window.requestIdleCallback);
+
+    let f1, f2;
+
+    return new Promise(resolve => {
+      idlePromise()
+      .then(_ => rafPromise())
+      .then(_ => rafPromise())
+      .then(frame => {f1 = frame; return rafPromise();})
+      .then(frame => {f2 = frame; return rafPromise();})
+      .then(_ => {
+        this._frameTime = f2 - f1;
+        this._refreshRate = Math.round(1000 / this._frameTime);
+        console.log(`Refresh rate should be ${this._refreshRate}Hz`);
+        resolve();
+      });
+    });
   }
 
   _addEventListeners () {
@@ -129,6 +158,11 @@ class Menu {
       return menuEase;
     }
 
+    this._duration = window.getComputedStyle(this._menu).animationDuration
+      .slice(0, -1) * 1000;
+    this._nFrames = Math.round(this._duration / this._frameTime);
+    console.log(`Total of ${this._nFrames} frames`);
+
     menuEase = document.createElement('style');
     menuEase.classList.add('menu-ease');
 
@@ -136,8 +170,12 @@ class Menu {
     const menuExpandContentsAnimation = [];
     const menuCollapseAnimation = [];
     const menuCollapseContentsAnimation = [];
-    for (let i = 0; i <= 100; i++) {
-      const step = this._ease(i/100);
+
+    const percentIncrement = 100 / this._nFrames;
+
+    for (let i = 0; i <= this._nFrames; i++) {
+      const step = this._ease(i / this._nFrames).toFixed(5);
+      const percentage = (i * percentIncrement).toFixed(5);
       const startX = this._collapsed.x;
       const startY = this._collapsed.y;
       const endX = 1;
@@ -145,7 +183,7 @@ class Menu {
 
       // Expand animation.
       this._append({
-        i,
+        percentage,
         step,
         startX: this._collapsed.x,
         startY: this._collapsed.y,
@@ -157,7 +195,7 @@ class Menu {
 
       // Collapse animation.
       this._append({
-        i,
+        percentage,
         step,
         startX: 1,
         startY: 1,
@@ -169,62 +207,62 @@ class Menu {
     }
 
     menuEase.textContent = `
-      @keyframes menuExpandAnimation {
-        ${menuExpandAnimation.join('')}
-      }
+    @keyframes menuExpandAnimation {
+      ${menuExpandAnimation.join('')}
+    }
 
-      @keyframes menuExpandContentsAnimation {
-        ${menuExpandContentsAnimation.join('')}
-      }
-      
-      @keyframes menuCollapseAnimation {
-        ${menuCollapseAnimation.join('')}
-      }
+    @keyframes menuExpandContentsAnimation {
+      ${menuExpandContentsAnimation.join('')}
+    }
 
-      @keyframes menuCollapseContentsAnimation {
-        ${menuCollapseContentsAnimation.join('')}
-      }`;
+    @keyframes menuCollapseAnimation {
+      ${menuCollapseAnimation.join('')}
+    }
+
+    @keyframes menuCollapseContentsAnimation {
+      ${menuCollapseContentsAnimation.join('')}
+    }`;
 
     document.head.appendChild(menuEase);
     return menuEase;
   }
 
   _append ({
-        i,
-        step,
-        startX, 
-        startY, 
-        endX, 
-        endY, 
-        outerAnimation, 
-        innerAnimation}=opts) {
+    percentage,
+    step,
+    startX,
+    startY,
+    endX,
+    endY,
+    outerAnimation,
+    innerAnimation}=opts) {
 
-    const xScale = startX + (endX - startX) * step;
-    const yScale = startY + (endY - startY) * step;
+      const xScale = (startX + (endX - startX) * step).toFixed(5);
+      const yScale = (startY + (endY - startY) * step).toFixed(5);
 
-    const invScaleX = 1 / xScale;
-    const invScaleY = 1 / yScale;
+      const invScaleX = (1 / xScale).toFixed(5);
+      const invScaleY = (1 / yScale).toFixed(5);
 
-    outerAnimation.push(`
-      ${i}% {
+      outerAnimation.push(`
+      ${percentage}% {
         transform: scale(${xScale}, ${yScale});
       }`);
 
-    innerAnimation.push(`
-      ${i}% {
+      innerAnimation.push(`
+      ${percentage}% {
         transform: scale(${invScaleX}, ${invScaleY});
       }`);
+    }
+
+    _clamp (value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    _ease (v, pow=4) {
+      v = this._clamp(v, 0, 1);
+
+      return 1 - Math.pow(1 - v, pow);
+    }
   }
 
-  _clamp (value, min, max) {
-    return Math.max(min, Math.min(max, value));
-  }
-
-  _ease (v, pow=4) {
-    v = this._clamp(v, 0, 1);
-
-    return 1 - Math.pow(1 - v, pow);
-  }
-}
-
-new Menu()
+  new Menu()
