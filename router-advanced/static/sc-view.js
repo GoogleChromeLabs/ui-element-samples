@@ -45,15 +45,17 @@ class SCView extends HTMLElement {
 
     xhr.onload = evt => {
       const newDoc = evt.target.response;
-      const newView = newDoc.querySelector('sc-view.visible');
+      //currentView created so we can render the HTML coming from newView using innerHTML.
+	  	const currentView = document.querySelector('sc-view.visible');
+	  	const newView = newDoc.querySelector('sc-view.visible');
 
-      // Copy in the child nodes from the parent.
-      while(newView.firstChild) {
-         this._view.appendChild(newView.firstChild);
-      }
+	  	// Copy in the child nodes from the parent.
+	  	while(newView.firstChild) {
+        this._view.appendChild(newView.firstChild);
+      };
 
       // Add the fragment to the page.
-      this.appendChild(this._view);
+      currentView.innerHTML = this._view.innerHTML;
 
       // Clear the timeout and remove the spinner if needed.
       clearTimeout(spinnerTimeout);
