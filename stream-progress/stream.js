@@ -22,7 +22,6 @@ class JSONTransformer {
     this.chunks = [];
     this.depth = 0;
     this.inString = false;
-    this.skipNext = false;
     this.decoder = new TextDecoder();
   }
 
@@ -30,10 +29,6 @@ class JSONTransformer {
   flush() {}
   transform(chunk, controller) {
     for(let i = 0; i < chunk.length; i++) {
-      if(this.skipNext) {
-        this.skipNext = false;
-        continue;
-      }
       const byte = chunk[i];
       const char = String.fromCharCode(byte);
       switch(char) {
@@ -61,7 +56,7 @@ class JSONTransformer {
           this.inString = !this.inString;
         break;
         case '\\':
-          this.skipNext = true;
+          i++;
         break;
       }
     }

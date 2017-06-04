@@ -35,6 +35,9 @@ class SCDial extends HTMLElement {
 
     this._canvas = document.createElement('canvas');
     this._ctx = this._canvas.getContext('2d');
+    this._ctx.font = `${SCDial.SIZE * 0.25}px Arial`;
+    this._ctx.textAlign = 'center';
+    this._ctx.textBaseline = 'middle';
 
     this._canvas.width = SCDial.SIZE;
     this._canvas.height = SCDial.SIZE;
@@ -90,9 +93,6 @@ class SCDial extends HTMLElement {
 
     // Number Label.
     this._ctx.fillStyle = '#333';
-    this._ctx.font = `${SCDial.SIZE * 0.25}px Arial`;
-    this._ctx.textAlign = 'center';
-    this._ctx.textBaseline = 'middle';
     this._ctx.fillText(Math.round(this._percentage * 100), mid, mid - 14);
 
     // Text label.
