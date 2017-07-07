@@ -138,4 +138,4 @@ class SCFlipCard extends HTMLElement {
   }
 }
 
-document.registerElement('sc-card', SCFlipCard);
+customElements.define('sc-card', SCFlipCard);
