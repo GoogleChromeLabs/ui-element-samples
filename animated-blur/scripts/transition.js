@@ -30,13 +30,13 @@ function initializeTransition() {
   fadeInAnimation.update();
 
   fadeOut.onmouseenter = function() {
-    fadeOutAnimation.play(blurMode.BLUR);
-    fadeInAnimation.play(blurMode.UNBLUR);
+    fadeOutAnimation.play(AnimatedBlur.BLUR_MODE.BLUR);
+    fadeInAnimation.play(AnimatedBlur.BLUR_MODE.UNBLUR);
   }
 
   fadeOut.onmouseleave = function() {
-    fadeInAnimation.play(blurMode.BLUR);
-    fadeOutAnimation.play(blurMode.UNBLUR);
+    fadeInAnimation.play(AnimatedBlur.BLUR_MODE.BLUR);
+    fadeOutAnimation.play(AnimatedBlur.BLUR_MODE.UNBLUR);
   }
 
   fadeOut.resize = function() {

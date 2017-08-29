@@ -21,7 +21,7 @@ function initializeGallery() {
   var blurAnimation = new AnimatedBlur('view', blurredGallery,
       {steps: 5, duration: 500});
   blurAnimation.update();
-  var mode = blurMode.STANDBY;
+  var mode = AnimatedBlur.BLUR_MODE.STANDBY;
   var animatedBlur = false;
   var currentBlurEvent = null;
   var currentTooltip = null;
@@ -35,11 +35,11 @@ function initializeGallery() {
     if (!animatedBlur) {
       reset();
       if (e.target.localName == 'img') {
-        mode = blurMode.BLUR;
+        mode = AnimatedBlur.BLUR_MODE.BLUR;
         animatedBlur = true;
         currentBlurEvent = e;
       } else {
-        mode = blurMode.STANDBY;
+        mode = AnimatedBlur.BLUR_MODE.STANDBY;
       }
     } else {
       mode *= -1;
@@ -89,10 +89,10 @@ function initializeGallery() {
 
   function displayTooltip() {
     var svg = document.body.querySelector('#toolTip');
-    if (mode == blurMode.UNBLUR) {
+    if (mode == AnimatedBlur.BLUR_MODE.UNBLUR) {
       svg.style.animation = 'view-b1-anim 1s linear forwards';
     }
-    if (mode == blurMode.STANDBY || !currentBlurEvent) return;
+    if (mode == AnimatedBlur.BLUR_MODE.STANDBY || !currentBlurEvent) return;
     if (currentBlurEvent.target.nextElementSibling.localName != 'figcaption') return;
     var g = document.createElementNS(svgns, 'g');
     currentTooltip = g;

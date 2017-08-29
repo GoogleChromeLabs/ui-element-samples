@@ -15,12 +15,6 @@
  *
  */
 
-var blurMode = {
-  BLUR : 1,
-  STANDBY : 0,
-  UNBLUR : -1
-}
-
 class AnimatedBlur {
   constructor(name, element, params) {
     this.name = name;
@@ -28,14 +22,73 @@ class AnimatedBlur {
     this.num = params.steps;
     this.duration = params.duration;
     this.initialized = false;
+    element.classList.add('animated-blur');
+  }
+  static get BLUR_MODE() {
+    return {
+      BLUR: 1,
+      STANDBY: 0,
+      UNBLUR: -1
+    };
   }
 
+  static getBlurStyle() {
+    var header =
+      "h1, h2, h3, h4, h5, h6 { " +
+      // Necessary as Firefox has different default value from Chrome etc.
+      "  margin: 0; " +
+      "  padding: 0; " +
+      "} ";
+    var html =
+      "html { " +
+      "  -webkit-text-size-adjust: none; /* Never autoresize text */ " +
+      "  -moz-text-size-adjust: none; " +
+      "  -ms-text-size-adjust: none; " +
+      "} ";
+    var bodyStyle =
+      ".bodyStyle { " +
+      // Necessary for all browers
+      "  min-width: -webkit-min-content; " +
+      "  min-width: -moz-min-content; " +
+      "  min-width: min-content; " +
+      "} ";
+    var animatedBlur =
+      ".animated-blur { " +
+      "  position: relative; " +
+      "} ";
+    var clonedElement =
+      ".clonedElement { " +
+      "  position: absolute; " +
+      "  display: block; " +
+      "  margin: 0 auto; " +
+      "  pointer-events: none; " +
+      "  width: 100%; " +
+      "  height: 100%; " +
+      "} ";
+    var composited =
+      ".composited { " +
+      "  -webkit-transform: translateZ(0); " +
+      "  -moz-transform: translateZ(0); " +
+      "  -ms-transform: translateZ(0); " +
+      "  -o-transform: translateZ(0); " +
+      "  transform: translateZ(0); " +
+      "} ";
+    return header + html + bodyStyle + animatedBlur +
+        composited + clonedElement;
+  }
+
+  static addStyle() {
+    var s = document.createElement('style');
+    s.innerHTML = AnimatedBlur.getBlurStyle();
+    document.getElementsByTagName('head')[0].appendChild(s);
+  }
   // Create template for shadow dom. It includes the element to be animated
   // and its style.
   createTemplate() {
     var template = document.createElement('Template');
     template.id = this.name + '-template';
     template.innerHTML = document.getElementsByTagName('style')[0].outerHTML;
+    template.innerHTML += "<style>" + AnimatedBlur.getBlurStyle() + "</style>";
     template.innerHTML += this.element.outerHTML;
     document.body.appendChild(template);
   }
@@ -87,9 +140,9 @@ class AnimatedBlur {
       var clone = document.importNode(template.content, true);
 
       if (i == 1) {
-        clone.childNodes[1].style.filter = 'blur(0px)';
+        clone.childNodes[2].style.filter = 'blur(0px)';
       } else {
-        clone.childNodes[1].style.filter =
+        clone.childNodes[2].style.filter =
             'blur(' + filterStdDev + 'px)';
         filterStdDev *= 2;
       }
@@ -120,7 +173,7 @@ class AnimatedBlur {
   }
 
   play(mode) {
-    if(mode == blurMode.STANDBY) return;
+    if(mode == AnimatedBlur.BLUR_MODE.STANDBY) return;
     for (var i = 0; i < this.num; ++i) {
       var div = mode > 0 ? document.body.querySelector('#' + this.name + '-b' + (i + 1))
           : document.body.querySelector('#' + this.name + '-b' + (this.num - i));
@@ -128,7 +181,7 @@ class AnimatedBlur {
       // opacity 1 would cause delay on Safari.
       div.style.opacity = 0.99;
     }
-    if (mode == blurMode.UNBLUR) {
+    if (mode == AnimatedBlur.BLUR_MODE.UNBLUR) {
       this.element.style.animation =
           this.name + '-b' + this.num + '-anim ' + this.duration + 'ms forwards linear';
     } else {
@@ -156,3 +209,5 @@ class AnimatedBlur {
     }
   }
 }
+
+AnimatedBlur.addStyle();

@@ -35,15 +35,15 @@ function initializeCarousel() {
     }
 
     img.onmouseenter = function() {
-      animations[imgs.indexOf(this)].play(blurMode.UNBLUR);
+      animations[imgs.indexOf(this)].play(AnimatedBlur.BLUR_MODE.UNBLUR);
     }
     img.onmouseleave = function() {
-      animations[imgs.indexOf(this)].play(blurMode.BLUR);
+      animations[imgs.indexOf(this)].play(AnimatedBlur.BLUR_MODE.BLUR);
     }
   }
 
   for (var i = 0; i < animations.length; ++i) {
     animations[i].update();
-    animations[i].play(blurMode.BLUR);
+    animations[i].play(AnimatedBlur.BLUR_MODE.BLUR);
   }
 }
