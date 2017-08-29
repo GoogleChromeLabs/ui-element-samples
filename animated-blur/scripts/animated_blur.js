@@ -34,45 +34,45 @@ class AnimatedBlur {
 
   static getBlurStyle() {
     var header =
-      "h1, h2, h3, h4, h5, h6 { " +
+      'h1, h2, h3, h4, h5, h6 { ' +
       // Necessary as Firefox has different default value from Chrome etc.
-      "  margin: 0; " +
-      "  padding: 0; " +
-      "} ";
+      '  margin: 0; ' +
+      '  padding: 0; ' +
+      '} ';
     var html =
-      "html { " +
-      "  -webkit-text-size-adjust: none; /* Never autoresize text */ " +
-      "  -moz-text-size-adjust: none; " +
-      "  -ms-text-size-adjust: none; " +
-      "} ";
+      'html { ' +
+      '  -webkit-text-size-adjust: none; /* Never autoresize text */ ' +
+      '  -moz-text-size-adjust: none; ' +
+      '  -ms-text-size-adjust: none; ' +
+      '} ';
     var bodyStyle =
-      ".bodyStyle { " +
+      '.bodyStyle { ' +
       // Necessary for all browers
-      "  min-width: -webkit-min-content; " +
-      "  min-width: -moz-min-content; " +
-      "  min-width: min-content; " +
-      "} ";
+      '  min-width: -webkit-min-content; ' +
+      '  min-width: -moz-min-content; ' +
+      '  min-width: min-content; ' +
+      '} ';
     var animatedBlur =
-      ".animated-blur { " +
-      "  position: relative; " +
-      "} ";
+      '.animated-blur { ' +
+      '  position: relative; ' +
+      '} ';
     var clonedElement =
-      ".clonedElement { " +
-      "  position: absolute; " +
-      "  display: block; " +
-      "  margin: 0 auto; " +
-      "  pointer-events: none; " +
-      "  width: 100%; " +
-      "  height: 100%; " +
-      "} ";
+      '.clonedElement { ' +
+      '  position: absolute; ' +
+      '  display: block; ' +
+      '  margin: 0 auto; ' +
+      '  pointer-events: none; ' +
+      '  width: 100%; ' +
+      '  height: 100%; ' +
+      '} ';
     var composited =
-      ".composited { " +
-      "  -webkit-transform: translateZ(0); " +
-      "  -moz-transform: translateZ(0); " +
-      "  -ms-transform: translateZ(0); " +
-      "  -o-transform: translateZ(0); " +
-      "  transform: translateZ(0); " +
-      "} ";
+      '.composited { ' +
+      '  -webkit-transform: translateZ(0); ' +
+      '  -moz-transform: translateZ(0); ' +
+      '  -ms-transform: translateZ(0); ' +
+      '  -o-transform: translateZ(0); ' +
+      '  transform: translateZ(0); ' +
+      '} ';
     return header + html + bodyStyle + animatedBlur +
         composited + clonedElement;
   }
@@ -88,14 +88,14 @@ class AnimatedBlur {
     var template = document.createElement('Template');
     template.id = this.name + '-template';
     template.innerHTML = document.getElementsByTagName('style')[0].outerHTML;
-    template.innerHTML += "<style>" + AnimatedBlur.getBlurStyle() + "</style>";
+    template.innerHTML += '<style>' + AnimatedBlur.getBlurStyle() + '</style>';
     template.innerHTML += this.element.outerHTML;
     document.body.appendChild(template);
   }
 
   setupKeyFrames() {
     for (var id = 0; id < this.num; ++id) {
-      var keyframes = '@keyframes ' + this.name + '-b' + (id + 1)  + '-anim {';
+      var keyframes = '@keyframes ' + this.name + '-b' + (id + 1) + '-anim {';
       for (var i = 0; i <= this.num; ++i) {
         // Use 0.99 otherwise Safari would have repainting
         // at the end of animation
@@ -104,7 +104,7 @@ class AnimatedBlur {
       }
       keyframes += '}';
 
-      if( document.styleSheets && document.styleSheets.length) {
+      if (document.styleSheets && document.styleSheets.length) {
           document.styleSheets[0].insertRule(keyframes, 0);
       } else {
         var s = document.createElement('style');
@@ -173,17 +173,21 @@ class AnimatedBlur {
   }
 
   play(mode) {
-    if(mode == AnimatedBlur.BLUR_MODE.STANDBY) return;
+    if (mode == AnimatedBlur.BLUR_MODE.STANDBY) return;
     for (var i = 0; i < this.num; ++i) {
-      var div = mode > 0 ? document.body.querySelector('#' + this.name + '-b' + (i + 1))
-          : document.body.querySelector('#' + this.name + '-b' + (this.num - i));
-      div.style.animation = this.name + '-b' + (i + 1) + '-anim ' + this.duration + 'ms forwards linear';
+      var div = mode > 0 ?
+          document.body.querySelector('#' + this.name + '-b' + (i + 1)) :
+          document.body.querySelector('#' + this.name + '-b' + (this.num - i));
+      div.style.animation =
+          this.name + '-b' + (i + 1) + '-anim ' +
+          this.duration + 'ms forwards linear';
       // opacity 1 would cause delay on Safari.
       div.style.opacity = 0.99;
     }
     if (mode == AnimatedBlur.BLUR_MODE.UNBLUR) {
       this.element.style.animation =
-          this.name + '-b' + this.num + '-anim ' + this.duration + 'ms forwards linear';
+          this.name + '-b' + this.num + '-anim ' +
+          this.duration + 'ms forwards linear';
     } else {
       this.element.style.animation =
           this.name + '-b1-anim ' + this.duration + 'ms forwards linear';
@@ -208,6 +212,6 @@ class AnimatedBlur {
       elements[i].style.height = this.element.clientHeight + 'px';
     }
   }
-}
+};
 
 AnimatedBlur.addStyle();

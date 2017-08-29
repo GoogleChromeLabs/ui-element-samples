@@ -32,18 +32,18 @@ function initializeTransition() {
   fadeOut.onmouseenter = function() {
     fadeOutAnimation.play(AnimatedBlur.BLUR_MODE.BLUR);
     fadeInAnimation.play(AnimatedBlur.BLUR_MODE.UNBLUR);
-  }
+  };
 
   fadeOut.onmouseleave = function() {
     fadeInAnimation.play(AnimatedBlur.BLUR_MODE.BLUR);
     fadeOutAnimation.play(AnimatedBlur.BLUR_MODE.UNBLUR);
-  }
+  };
 
   fadeOut.resize = function() {
     fadeOutAnimation.resize();
-  }
+  };
 
   fadeIn.resize = function() {
     fadeInAnimation.resize();
-  }
+  };
 }
