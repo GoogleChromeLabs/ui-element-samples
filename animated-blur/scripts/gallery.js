@@ -26,8 +26,8 @@ function initializeGallery() {
   var currentBlurEvent = null;
   var currentTooltip = null;
 
-  var svgns = "http://www.w3.org/2000/svg";
-  var xhtmlns = "http://www.w3.org/1999/xhtml";
+  var svgns = 'http://www.w3.org/2000/svg';
+  var xhtmlns = 'http://www.w3.org/1999/xhtml';
 
   createTooltipSVG();
 
@@ -48,7 +48,7 @@ function initializeGallery() {
     }
     blurAnimation.play(mode);
     displayTooltip();
-  }
+  };
 
   blurredGallery.resize = function() {
     blurAnimation.resize();
@@ -63,7 +63,7 @@ function initializeGallery() {
       createTooltipSVG();
       displayTooltip(mode);
     }
-  }
+  };
 
   function reset() {
     if (currentTooltip) {
@@ -101,7 +101,7 @@ function initializeGallery() {
     // TODO: Doesn't work with window resize
     var anchor = {'w': currentBlurEvent.layerX, 'h': currentBlurEvent.layerY};
     var t = 50, k = 15;
-    var tip = {'w': (3/4 * t), 'h': k};
+    var tip = {'w': (3 / 4 * t), 'h': k};
     var fo = document.createElementNS(svgns, 'foreignObject');
     var tooltipX = anchor.w - tip.w + foWidth > blurredGallery.clientWidth ?
         blurredGallery.clientWidth - foWidth - tip.w : anchor.w - tip.w;
@@ -129,9 +129,9 @@ function initializeGallery() {
     blurredGallery.clientHeight - foHeight - tip.h : anchor.h + tip.h;
     fo.setAttribute('y', tooltipY);
     var polygon = document.createElementNS(svgns, 'polygon');
-    polygon.setAttribute('points', "0,0 0," + foHeight + " " + foWidth +
-        "," + foHeight + " " + foWidth + ",0 " + (t) + ",0 " + tip.w +
-        "," + (-tip.h) + " " + (t/2) + ",0");
+    polygon.setAttribute('points', '0,0 0,' + foHeight + ' ' + foWidth +
+        ',' + foHeight + ' ' + foWidth + ',0 ' + (t) + ',0 ' + tip.w +
+        ',' + (-tip.h) + ' ' + (t / 2) + ',0');
     polygon.setAttribute('height', foHeight + tip.h);
     polygon.style.height = foHeight + tip.h;
     polygon.setAttribute('width', foWidth);

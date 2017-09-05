@@ -81,109 +81,108 @@ td {
 </head>
 
 <body>
-    <h1>Test page</h1>
-  <div class='separator'>Demo 1: Hover on the image to see Google logo
-    transition</div>
-  <div id='transition'>
-    <img id='transition-fade-in' src='./images/old.png'/>
-    <img id='transition-fade-out' src='./images/new.png'/>
-  </div>
-  <div class='separator'></div>
-  <div class='separator'></div>
-  <div class='separator'>Demo 2: Hover on any of the following blurred images</div>
-  <div id='carousel'>
-    <img src="./images/chrome.png"/>
-    <img src="./images/search.png"/>
-    <img src="./images/photos.png"/>
-    <img src="./images/youtube.png"/>
-    <img src="./images/gmail.png"/>
-    <img src="./images/maps.png"/>
-  </div>
-  <div class='separator'></div>
-  <div class='separator'>Demo 3: Click on one of the following products</div>
-  <div id='gallery'>
-    <h1>Google products gallery</h1>
-    <p>Browse a comprehensive list of Google products designed to help you work and play, stay organized, get answers, keep in touch, grow your business, and more.</p>
-    <table>
-      <tr>
-        <td>
-          <figure>
-            <img src="./images/chrome.png" alt="Chrome"/>
-            <figcaption>A fast, simple, and secure browser for the modern web.
-            </figcaption>
-          </figure>
-        </td>
-        <td>
-          <figure>
-            <img src="./images/youtube.png" alt="YouTube"/>
-            <figcaption>Discover, watch, and share your favorite videos and music.
-            </figcaption>
-          </figure>
-        </td>
-        <td>
-          <figure>
-            <img src="./images/maps.png" alt="Maps"/>
-            <figcaption>Get GPS navigation, traffic alerts, transit directions, and more.
-            </figcaption>
-          </figure>
-        </td>
-        <td>
-          <figure>
-            <img src="./images/translate.png" alt="Translate"/>
-            <figcaption>Speak, scan, type, or draw to translate in over 100 languages.
-            </figcaption>
-          </figure>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <figure>
-            <img src="./images/search.png" alt="Search"/>
-            <figcaption>Get instant answers on the web and on your phone.
-            </figcaption>
-          </figure>
-        </td>
-        <td>
-          <figure>
-            <img src="./images/android.png" alt="Android Phones"/>
-            <figcaption>All kinds of devices for all kinds of folks.
-            </figcaption>
-          </figure>
-        </td>
-        <td>
-          <figure>
-            <img src="./images/gmail.png" alt="Gmail"/>
-            <figcaption>Email by Google</figcaption>
-          </figure>
-        </td>
-        <td>
-          <figure>
-            <img src="./images/photos.png" alt="Photos"/>
-            <figcaption>All your photos, organized, and easy to find.
-            </figcaption>
-          </figure>
-        </td>
-      </tr>
-    </table>
-    <div style="height:1000px;"></div>
-  </div>
-  <script src="scripts/animated_blur.js"></script>
-  <script src="scripts/gallery.js"></script>
-  <script src="scripts/transition.js"></script>
-  <script src="scripts/carousel.js"></script>
-  <script>
-    window.addEventListener("load", function(event) {
-      initializeGallery();
-      initializeTransition();
-      initializeCarousel();
-      var blurredElements =
-          document.querySelectorAll('.animated-blur.composited');
-      window.onresize = function() {
-        for (var i = 0; i < blurredElements.length; ++i) {
-          blurredElements[i].resize();
+    <div class='separator'>Demo 1: Hover on the image to see Google logo
+      transition</div>
+    <div id='transition'>
+      <img id='transition-fade-in' src='./images/old.png'/>
+      <img id='transition-fade-out' src='./images/new.png'/>
+    </div>
+    <div class='separator'></div>
+    <div class='separator'></div>
+    <div class='separator'>Demo 2: Hover on any of the following blurred images</div>
+    <div id='carousel'>
+      <img src="./images/chrome.png"/>
+      <img src="./images/search.png"/>
+      <img src="./images/photos.png"/>
+      <img src="./images/youtube.png"/>
+      <img src="./images/gmail.png"/>
+      <img src="./images/maps.png"/>
+    </div>
+    <div class='separator'></div>
+    <div class='separator'>Demo 3: Click on one of the following products</div>
+    <div id='gallery'>
+      <h1>Google products gallery</h1>
+      <p>Browse a comprehensive list of Google products designed to help you work and play, stay organized, get answers, keep in touch, grow your business, and more.</p>
+      <table>
+        <tr>
+          <td>
+            <figure>
+              <img src="./images/chrome.png" alt="Chrome"/>
+              <figcaption>A fast, simple, and secure browser for the modern web.
+              </figcaption>
+            </figure>
+          </td>
+          <td>
+            <figure>
+              <img src="./images/youtube.png" alt="YouTube"/>
+              <figcaption>Discover, watch, and share your favorite videos and music.
+              </figcaption>
+            </figure>
+          </td>
+          <td>
+            <figure>
+              <img src="./images/maps.png" alt="Maps"/>
+              <figcaption>Get GPS navigation, traffic alerts, transit directions, and more.
+              </figcaption>
+            </figure>
+          </td>
+          <td>
+            <figure>
+              <img src="./images/translate.png" alt="Translate"/>
+              <figcaption>Speak, scan, type, or draw to translate in over 100 languages.
+              </figcaption>
+            </figure>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <figure>
+              <img src="./images/search.png" alt="Search"/>
+              <figcaption>Get instant answers on the web and on your phone.
+              </figcaption>
+            </figure>
+          </td>
+          <td>
+            <figure>
+              <img src="./images/android.png" alt="Android Phones"/>
+              <figcaption>All kinds of devices for all kinds of folks.
+              </figcaption>
+            </figure>
+          </td>
+          <td>
+            <figure>
+              <img src="./images/gmail.png" alt="Gmail"/>
+              <figcaption>Email by Google</figcaption>
+            </figure>
+          </td>
+          <td>
+            <figure>
+              <img src="./images/photos.png" alt="Photos"/>
+              <figcaption>All your photos, organized, and easy to find.
+              </figcaption>
+            </figure>
+          </td>
+        </tr>
+      </table>
+      <div style="height:1000px;"></div>
+    </div>
+    <script src="scripts/animated_blur.js"></script>
+    <script src="scripts/gallery.js"></script>
+    <script src="scripts/transition.js"></script>
+    <script src="scripts/carousel.js"></script>
+    <script>
+      window.addEventListener("load", function(event) {
+        initializeGallery();
+        initializeTransition();
+        initializeCarousel();
+        var blurredElements =
+            document.querySelectorAll('.animated-blur.composited');
+        window.onresize = function() {
+          for (var i = 0; i < blurredElements.length; ++i) {
+            blurredElements[i].resize();
+          }
         }
-      }
-    });
-  </script>
+      });
+    </script>
 </body>
 </html>

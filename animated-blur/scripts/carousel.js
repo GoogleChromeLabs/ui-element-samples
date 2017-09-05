@@ -32,14 +32,14 @@ function initializeCarousel() {
 
     img.resize = function() {
       animations[imgs.indexOf(this)].resize();
-    }
+    };
 
     img.onmouseenter = function() {
       animations[imgs.indexOf(this)].play(AnimatedBlur.BLUR_MODE.UNBLUR);
-    }
+    };
     img.onmouseleave = function() {
       animations[imgs.indexOf(this)].play(AnimatedBlur.BLUR_MODE.BLUR);
-    }
+    };
   }
 
   for (var i = 0; i < animations.length; ++i) {
