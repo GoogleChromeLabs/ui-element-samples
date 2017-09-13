@@ -73,14 +73,25 @@ class AnimatedBlur {
       '  -o-transform: translateZ(0); ' +
       '  transform: translateZ(0); ' +
       '} ';
-    return header + html + bodyStyle + animatedBlur +
-        composited + clonedElement;
+    return [html, bodyStyle, animatedBlur,
+        composited, clonedElement];
   }
 
   static addStyle() {
-    var s = document.createElement('style');
-    s.innerHTML = AnimatedBlur.getBlurStyle();
-    document.getElementsByTagName('head')[0].appendChild(s);
+    var rules = AnimatedBlur.getBlurStyle();
+    if (document.styleSheets && document.styleSheets.length) {
+      for (var i = 0; i < rules.length; ++i) {
+        document.getElementsByTagName('style')[0].innerHTML =
+            rules[i] + '\n' +
+            document.getElementsByTagName('style')[0].innerHTML;
+      }
+    } else {
+      var s = document.createElement('style');
+      for (var i = 0; i < rules.length; ++i) {
+        s.innerHTML += rules[i];
+      }
+      document.getElementsByTagName('head')[0].appendChild(s);
+    }
   }
   // Create template for shadow dom. It includes the element to be animated
   // and its style.
@@ -88,7 +99,6 @@ class AnimatedBlur {
     var template = document.createElement('Template');
     template.id = this.name + '-template';
     template.innerHTML = document.getElementsByTagName('style')[0].outerHTML;
-    template.innerHTML += '<style>' + AnimatedBlur.getBlurStyle() + '</style>';
     template.innerHTML += this.element.outerHTML;
     document.body.appendChild(template);
   }
@@ -140,9 +150,9 @@ class AnimatedBlur {
       var clone = document.importNode(template.content, true);
 
       if (i == 1) {
-        clone.childNodes[2].style.filter = 'blur(0px)';
+        clone.childNodes[1].style.filter = 'blur(0px)';
       } else {
-        clone.childNodes[2].style.filter =
+        clone.childNodes[1].style.filter =
             'blur(' + filterStdDev + 'px)';
         filterStdDev *= 2;
       }
