@@ -98,7 +98,10 @@ class AnimatedBlur {
   createTemplate() {
     var template = document.createElement('Template');
     template.id = this.name + '-template';
-    template.innerHTML = document.getElementsByTagName('style')[0].outerHTML;
+    var styles = document.getElementsByTagName('style');
+    for (var i = 0; i < styles.length; ++i) {
+      template.innerHTML = styles[i].outerHTML;
+    }
     template.innerHTML += this.element.outerHTML;
     document.body.appendChild(template);
   }
