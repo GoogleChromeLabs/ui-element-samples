@@ -50,12 +50,6 @@ class AnimatedBlur {
       '.animated-blur { ' +
       '  position: relative; ' +
       '} ';
-    var header =
-      '.animated-blur p, pre, h1, h2, h3, h4, h5, h6 { ' +
-      // Necessary as Firefox has different default value from Chrome etc.
-      '  margin: 0; ' +
-      '  padding: 0; ' +
-      '} ';
     var clonedElement =
       '.clonedElement { ' +
       '  position: absolute; ' +
@@ -132,8 +126,24 @@ class AnimatedBlur {
     var height = this.element.clientHeight;
     var container = document.createElement('div');
     container.id = this.name + '-clonedElement';
-    container.style.top = this.element.offsetTop + 'px';
-    container.style.left = this.element.offsetLeft + 'px';
+    // The following margin* logic should be optimized.
+    var marginTop =
+        parseInt(window.getComputedStyle(this.element).marginTop);
+    var marginLeft =
+        parseInt(window.getComputedStyle(this.element).marginLeft);
+    if (marginTop == 0) {
+      var header = 'p, pre, h1, h2, h3, h4, h5, h6';
+      var descendants = this.element.querySelectorAll(header);
+      for (var i = 0; i < descendants.length; ++i) {
+        if (window.getComputedStyle(descendants[i]).marginTop != '0px') {
+          marginTop =
+          parseInt(window.getComputedStyle(descendants[i]).marginTop);
+          break;
+        }
+      }
+    }
+    container.style.top = this.element.offsetTop  - marginTop + 'px';
+    container.style.left = this.element.offsetLeft - marginLeft + 'px';
     container.style.width = width + 'px';
     container.style.height = height + 'px';
     container.classList.add('composited');
