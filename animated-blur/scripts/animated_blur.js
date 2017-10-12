@@ -24,6 +24,7 @@ class AnimatedBlur {
     this.initialized = false;
     element.classList.add('animated-blur');
   }
+
   static get BLUR_MODE() {
     return {
       BLUR: 1,
@@ -87,6 +88,25 @@ class AnimatedBlur {
       document.getElementsByTagName('head')[0].appendChild(s);
     }
   }
+
+  calculateMargin() {
+    this.marginTop =
+        parseInt(window.getComputedStyle(this.element).marginTop);
+    this.marginLeft =
+        parseInt(window.getComputedStyle(this.element).marginLeft);
+    if (this.marginTop == 0) {
+      var header = 'p, pre, h1, h2, h3, h4, h5, h6';
+      var descendants = this.element.querySelectorAll(header);
+      for (var i = 0; i < descendants.length; ++i) {
+        if (window.getComputedStyle(descendants[i]).marginTop != '0px') {
+          this.marginTop =
+              parseInt(window.getComputedStyle(descendants[i]).marginTop);
+          break;
+        }
+      }
+    }
+  }
+
   // Create template for shadow dom. It includes the element to be animated
   // and its style.
   createTemplate() {
@@ -126,24 +146,8 @@ class AnimatedBlur {
     var height = this.element.clientHeight;
     var container = document.createElement('div');
     container.id = this.name + '-clonedElement';
-    // The following margin* logic should be optimized.
-    var marginTop =
-        parseInt(window.getComputedStyle(this.element).marginTop);
-    var marginLeft =
-        parseInt(window.getComputedStyle(this.element).marginLeft);
-    if (marginTop == 0) {
-      var header = 'p, pre, h1, h2, h3, h4, h5, h6';
-      var descendants = this.element.querySelectorAll(header);
-      for (var i = 0; i < descendants.length; ++i) {
-        if (window.getComputedStyle(descendants[i]).marginTop != '0px') {
-          marginTop =
-          parseInt(window.getComputedStyle(descendants[i]).marginTop);
-          break;
-        }
-      }
-    }
-    container.style.top = this.element.offsetTop  - marginTop + 'px';
-    container.style.left = this.element.offsetLeft - marginLeft + 'px';
+    container.style.top = this.element.offsetTop  - this.marginTop + 'px';
+    container.style.left = this.element.offsetLeft - this.marginLeft + 'px';
     container.style.width = width + 'px';
     container.style.height = height + 'px';
     container.classList.add('composited');
@@ -186,6 +190,7 @@ class AnimatedBlur {
     if (this.initialized)
       return;
     document.body.classList.add('bodyStyle');
+    this.calculateMargin();
     this.setupKeyFrames();
     this.createTemplate();
     this.cloneElements();
@@ -229,8 +234,13 @@ class AnimatedBlur {
   }
 
   resize() {
-    var elements = document.body.querySelectorAll('.clonedElement');
+    var blur = 'div[id^="' + this.name + '"][id$="clonedElement"]';
+    var elements = document.body.querySelectorAll(blur);
     for (var i = 0; i < elements.length; ++i) {
+      elements[i].style.top = this.element.offsetTop
+          - this.marginTop + 'px';
+      elements[i].style.left = this.element.offsetLeft
+          - this.marginLeft + 'px';
       elements[i].style.width = this.element.clientWidth + 'px';
       elements[i].style.height = this.element.clientHeight + 'px';
     }
