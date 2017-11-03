@@ -1,0 +1,22 @@
+canvas {
+  margin-top: 2em;
+}
+
+#input {
+  height: 0;
+  overflow: hidden;
+  width: 0;
+}
+
+#input + label {
+  background-color: #777;
+  color: #f3f3f3;
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 2em;
+  padding: 5px;
+}
+
+#input:focus + label {
+  outline: 5px solid teal;
+}
