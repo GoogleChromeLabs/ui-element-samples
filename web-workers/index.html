@@ -16,20 +16,26 @@ limitations under the License.
 <head>
   <title>SuperCharged 💫</title>
   <style type="text/css">
+    canvas {
+      margin-top: 2em;
+    }
+
     #input {
-      width:0px;
-      height:0px;
+      height: 0;
       overflow: hidden;
+      width: 0;
     }
+
     #input + label {
-      display:inline-block;
       background-color: #777;
-      font-family: sans-serif;
-      padding:5px;
-      font-size:2em;
       color: #f3f3f3;
+      display: inline-block;
+      font-family: sans-serif;
+      font-size: 2em;
+      padding: 5px;
     }
-    #input:focus +label {
+
+    #input:focus + label {
       outline: 5px solid teal;
     }
   </style>
@@ -38,39 +44,51 @@ limitations under the License.
   <div>
     <input type="file" accept="image/*" name="input" id="input">
     <label for="input" >Choose File</label>
-    <br>
-    <br>
-    <br>
   </div>
 
   <canvas id="preview"></canvas>
 
   <script type="text/javascript">
-    const $input = document.getElementById('input')
-    const $preview = document.getElementById('preview')
-    const previewCtx = $preview.getContext('2d')
-    const worker = new Worker('worker.js')
+    const $input = document.getElementById('input');
+    const $preview = document.getElementById('preview');
+    const previewCtx = $preview.getContext('2d');
+    const worker = new Worker('worker.js');
+    
 
-    worker.addEventListener('message', (d) => {
-      const imageData = d.data
-      previewCtx.putImageData(imageData, 0, 0)
-    });
-
+    /** Sends image data to Worker to apply a filter. */
     function applyFilter() {
-      const imageData = previewCtx.getImageData(0,0, $preview.width, $preview.height)
-      worker.postMessage(imageData, [imageData.data.buffer])
+      const imageData = previewCtx.getImageData(0, 0, $preview.width, $preview.height);
+      worker.postMessage(imageData, [imageData.data.buffer]);
     }
 
+
+    /**
+     * Listens messages from worker.
+     * In this case: puts image data back to the canvas.
+     * @param {!Object} d Data sent by the worker.
+     */
+    worker.addEventListener('message', (d) => {
+      const imageData = d.data;
+      previewCtx.putImageData(imageData, 0, 0);
+    });
+
+
+    /**
+     * Processes image when added to input file. Including:
+     *   1. Resizing and drawing image in cavas.
+     *   2. Applying a filter (using a web worker).
+     * @param {!Event} e On change event on the input file.
+     */
     $input.addEventListener('change', (e) => {
-      const file = e.target.files[0]
-      createImageBitmap(file)
-        .then((bitmap) => {
-          $preview.width = bitmap.width
-          $preview.height = bitmap.height
-          previewCtx.drawImage(bitmap, 0, 0)
-          applyFilter()
-        })
-    })
+      const file = e.target.files[0];
+
+      createImageBitmap(file).then((bitmap) => {
+          $preview.height = bitmap.height;
+          $preview.width = bitmap.width;
+          previewCtx.drawImage(bitmap, 0, 0);
+          applyFilter();
+      });
+    });
   </script>
 </body>
 </html>
