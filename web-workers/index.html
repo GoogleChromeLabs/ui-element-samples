@@ -60,6 +60,11 @@ limitations under the License.
     $input.addEventListener('change', (e) => {
       const file = e.target.files[0];
 
+      /**
+       * Creates an ImageBitmap from loaded map.
+       * Once loaded: the image bitmap is added to canvas and a filter is applied.
+       * @param {!ImageBitmap} bitmap of the image loaded on the input field.
+       */
       createImageBitmap(file).then((bitmap) => {
           $preview.height = bitmap.height;
           $preview.width = bitmap.width;
