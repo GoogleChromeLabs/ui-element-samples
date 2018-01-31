@@ -29,6 +29,9 @@ var SCROLL_RUNWAY = 2000;
 // The animation interval (in ms) for fading in content from tombstones.
 var ANIMATION_DURATION_MS = 200;
 
+// Wheel speed multiplier
+var WHEEL_SPEED = 4;  
+
 scope.InfiniteScrollerSource = function() {
 }
 
@@ -68,7 +71,7 @@ scope.InfiniteScrollerSource.prototype = {
  * @param {InfiniteScrollerSource} source A provider of the content to be
  *     displayed in the infinite scroll region.
  */
-scope.InfiniteScroller = function(scroller, source) {
+scope.InfiniteScroller = function(scroller, source, direction) {
   this.anchorItem = {index: 0, offset: 0};
   this.firstAttachedItem_ = 0;
   this.lastAttachedItem_ = 0;
@@ -81,8 +84,20 @@ scope.InfiniteScroller = function(scroller, source) {
   this.items_ = [];
   this.loadedItems_ = 0;
   this.requestInProgress_ = false;
+  this.scrollerFontSize = 0;
+  this.scaleY = direction === 'reverse' ? -1 : 1;
+
+  this.scroller_.style.transform = 'scaleY(' + this.scaleY + ')';
+
+  if (this.scaleY < 0) {
+    // in case reverse scaling scroll by mouse wheel became inverted
+    // so it should be reversed too
+    this.scroller_.addEventListener('wheel', this.onWheel_.bind(this));
+  }
   this.scroller_.addEventListener('scroll', this.onScroll_.bind(this));
-  window.addEventListener('resize', this.onResize_.bind(this));
+
+  this.resizeListener = this.onResize_.bind(this);
+  window.addEventListener('resize', this.resizeListener);
 
   // Create an element to force the scroller to allow scrolling to a certain
   // point.
@@ -100,7 +115,20 @@ scope.InfiniteScroller = function(scroller, source) {
 }
 
 scope.InfiniteScroller.prototype = {
-
+  destroy: function () {
+    this.items_.length = 0;
+    this.scroller_.remove();
+    window.removeEventListener('resize', this.resizeListener);
+  },  
+  /** 
+   * Called when mousewheel event fires in case of reverse scaling
+  */
+  onWheel_: function (e) {
+    if(e.deltaY) {
+      e.preventDefault();
+      e.currentTarget.scrollTop -= this.scrollerFontSize * (e.deltaY < 0 ? -1 : 1) * WHEEL_SPEED;
+    }
+  },
   /**
    * Called when the browser window resizes to adapt to new scroller bounds and
    * layout sizes of items within the scroller.
@@ -116,6 +144,9 @@ scope.InfiniteScroller.prototype = {
     this.tombstoneSize_ = tombstone.offsetHeight;
     this.tombstoneWidth_ = tombstone.offsetWidth;
     this.scroller_.removeChild(tombstone);
+    console.log(1);
+    // adopt wheel speed on resize
+    this.scrollerFontSize = parseFloat(getComputedStyle(this.scroller_).getPropertyValue('font-size'));
 
     // Reset the cached size of items in the scroller as they may no longer be
     // correct after the item content undergoes layout.
@@ -306,7 +337,7 @@ scope.InfiniteScroller.prototype = {
     // Set up initial positions for animations.
     for (var i in tombstoneAnimations) {
       var anim = tombstoneAnimations[i];
-      this.items_[i].node.style.transform = 'translateY(' + (this.anchorScrollTop + anim[1]) + 'px) scale(' + (this.tombstoneWidth_ / this.items_[i].width) + ', ' + (this.tombstoneSize_ / this.items_[i].height) + ')';
+      this.items_[i].node.style.transform = 'translateY(' + (this.anchorScrollTop + anim[1]) + 'px) scale(' + (this.tombstoneWidth_ / this.items_[i].width) + ', ' + (this.tombstoneSize_ / this.items_[i].height) * this.scaleY + ')';
       // Call offsetTop on the nodes to be animated to force them to apply current transforms.
       this.items_[i].node.offsetTop;
       anim[0].offsetTop;
@@ -316,20 +347,20 @@ scope.InfiniteScroller.prototype = {
       var anim = tombstoneAnimations[i];
       if (anim) {
         anim[0].style.transition = 'transform ' + ANIMATION_DURATION_MS + 'ms, opacity ' + ANIMATION_DURATION_MS + 'ms';
-        anim[0].style.transform = 'translateY(' + curPos + 'px) scale(' + (this.items_[i].width / this.tombstoneWidth_) + ', ' + (this.items_[i].height / this.tombstoneSize_) + ')';
+        anim[0].style.transform = 'translateY(' + curPos + 'px) scale(' + (this.items_[i].width / this.tombstoneWidth_) + ', ' + (this.items_[i].height / this.tombstoneSize_) * this.scaleY + ')';
         anim[0].style.opacity = 0;
       }
       if (curPos != this.items_[i].top) {
         if (!anim)
           this.items_[i].node.style.transition = '';
-        this.items_[i].node.style.transform = 'translateY(' + curPos + 'px)';
+        this.items_[i].node.style.transform = 'translateY(' + curPos + 'px) scaleY(' + this.scaleY + ')';
       }
       this.items_[i].top = curPos;
       curPos += this.items_[i].height || this.tombstoneSize_;
     }
 
     this.scrollRunwayEnd_ = Math.max(this.scrollRunwayEnd_, curPos + SCROLL_RUNWAY)
-    this.scrollRunway_.style.transform = 'translate(0, ' + this.scrollRunwayEnd_ + 'px)';
+    this.scrollRunway_.style.transform = 'translate(0, ' + this.scrollRunwayEnd_ + 'px) scaleY(' + this.scaleY + ')';
     this.scroller_.scrollTop = this.anchorScrollTop;
 
     if (ANIMATION_DURATION_MS) {
