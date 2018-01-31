@@ -45,6 +45,7 @@ limitations under the License.
   <link href='styles/messages.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
+  <div style="text-align:right;"><button onclick="changeDirection()">Change direction</button></div>
   <div id="templates">
     <li class="chat-item" data-id="{{id}}">
       <img class="avatar" width="48" height="48">
@@ -93,7 +94,7 @@ function getItem(id) {
       avatar: Math.floor(Math.random()*NUM_AVATARS),
       self: Math.random() < 0.1,
       image: Math.random() < 1.0 / 20 ? Math.floor(Math.random()*NUM_IMAGES) : '',
-      time: new Date(Math.floor(INIT_TIME + id*20*1000 + Math.random()*20*1000)),
+      time: new Date(Math.floor(INIT_TIME + (id*20*1000 + Math.random()*20*1000)*window.scroller.scaleY)),
       message: pickRandom(MESSAGES)
     }
     if(item.image === '') {
@@ -168,6 +169,21 @@ ContentSource.prototype = {
 
 };
 
+function changeDirection() {
+  initScroller(window.scroller.scaleY < 0 ? 'normal' : 'reverse');
+}
+
+function initScroller(direction) {
+  if (window.scroller) {
+    window.scroller.destroy();
+    // recreate timeline
+    var ul = document.createElement('ul');
+    ul.id = 'chat-timeline';
+    document.body.appendChild(ul);
+  }
+  window.scroller = new InfiniteScroller(document.querySelector('#chat-timeline'), new ContentSource(), direction);
+}
+
 function numDomNodes(node) {
   if(!node.children || node.children.length == 0)
     return 0;
@@ -176,11 +192,7 @@ function numDomNodes(node) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  window.scroller =
-    new InfiniteScroller(
-      document.querySelector('#chat-timeline'),
-      new ContentSource()
-    );
+  initScroller('normal');
 
   var stats = new Stats();
   var domPanel = new Stats.Panel('DOM Nodes', '#0ff', '#002');
