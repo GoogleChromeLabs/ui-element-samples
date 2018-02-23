@@ -36,6 +36,11 @@ class Cards {
     this.addEventListeners();
 
     requestAnimationFrame(this.update);
+
+    new MutationObserver(this.refreshCardsOnMutation.bind(this)).observe(document.body, {
+      subtree: true,
+      childList: true
+    });
   }
 
   addEventListeners () {
@@ -46,6 +51,17 @@ class Cards {
     document.addEventListener('mousedown', this.onStart);
     document.addEventListener('mousemove', this.onMove);
     document.addEventListener('mouseup', this.onEnd);
+  }
+
+  refreshCardsOnMutation(mutations) {
+    let addedCardEvent = false;
+    for (let i = 0; i < mutations.length; i++) {
+      let mutation = mutations[i];
+      if (mutation.addedNodes.length > 0 && mutation.addedNodes[0].nodeType === 1 && mutation.addedNodes[0].classList.contains('card')) {
+        this.cards = Array.from(document.querySelectorAll('.card'));
+        return;
+      }
+    }
   }
 
   onStart (evt) {
@@ -71,7 +87,7 @@ class Cards {
     if (!this.target)
       return;
 
-    this.currentX = evt.pageX || evt.touches[0].pageX;
+    this.currentX = evt.pageX || (evt.touches ? evt.touches[0].pageX : 0);
   }
 
   onEnd (evt) {
