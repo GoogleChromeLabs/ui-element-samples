@@ -89,8 +89,8 @@ addEventListener('fetch', event => {
       return streamArticle(event, url);
     }
 
-    const cachedReponse = await caches.match(event.request);
-    if (cachedReponse) return cachedReponse;
+    const cachedResponse = await caches.match(event.request);
+    if (cachedResponse) return cachedResponse;
 
     return await fetch(event.request);
   }());
