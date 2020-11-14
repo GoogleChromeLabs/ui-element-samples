@@ -31,5 +31,5 @@ addEventListener('message', (d) => {
     }
   }
   
-  postMessage(imageData, [imageData.data.buffer])
+  postMessage(imageData, [imageData.data.buffer]);
 });
