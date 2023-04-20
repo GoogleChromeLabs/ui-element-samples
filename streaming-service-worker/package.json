@@ -17,7 +17,7 @@
     "marked": "^0.3.6",
     "mkdirp": "^0.5.1",
     "nodemon": "^1.11.0",
-    "nunjucks": "^3.0.1",
+    "nunjucks": "^3.2.4",
     "nunjucks-date-filter": "^0.1.1",
     "static-module": "^1.4.0",
     "through2": "^2.0.3"
