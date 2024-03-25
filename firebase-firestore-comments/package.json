@@ -12,7 +12,7 @@
     "serve": "firebase serve --only functions,hosting"
   },
   "dependencies": {
-    "express": "^4.16.2",
+    "express": "^4.19.2",
     "firebase": "^4.9.0",
     "firebase-functions": "^0.8.1"
   },
