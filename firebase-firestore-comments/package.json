@@ -20,6 +20,6 @@
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "cpx": "^1.5.0",
-    "firebase-tools": "~3.17.4"
+    "firebase-tools": "~13.6.0"
   }
 }
