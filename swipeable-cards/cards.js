@@ -39,9 +39,9 @@ class Cards {
   }
 
   addEventListeners () {
-    document.addEventListener('touchstart', this.onStart);
-    document.addEventListener('touchmove', this.onMove);
-    document.addEventListener('touchend', this.onEnd);
+    document.addEventListener('touchstart', this.onStart, {passive: false});
+    document.addEventListener('touchmove', this.onMove, {passive: false});
+    document.addEventListener('touchend', this.onEnd, {passive: false});
 
     document.addEventListener('mousedown', this.onStart);
     document.addEventListener('mousemove', this.onMove);
