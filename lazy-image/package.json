@@ -11,7 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.15.4",
-    "gm": "^1.23.0",
+    "gm": "^1.25.0",
     "nodemon": "^1.11.0"
   }
 }
