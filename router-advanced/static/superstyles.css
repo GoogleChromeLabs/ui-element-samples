@@ -44,6 +44,9 @@ sc-view {
   justify-content: center;
   align-items: center;
   color: white;
+  display:block;
+  zoom: 1;
+  overflow:hidden;
 }
 
 sc-view.visible {
