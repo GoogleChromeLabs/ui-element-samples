@@ -97,7 +97,7 @@ function getItem(id) {
       message: pickRandom(MESSAGES)
     }
     if(item.image === '') {
-      resolve(item);
+      return resolve(item);
     }
     var image = new Image();
     image.src = 'images/image' + item.image + '.jpg';
