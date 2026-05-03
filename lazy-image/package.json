@@ -12,6 +12,6 @@
   "dependencies": {
     "express": "^4.15.4",
     "gm": "^1.23.0",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.19.4"
   }
 }
