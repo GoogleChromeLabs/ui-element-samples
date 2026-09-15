@@ -31,6 +31,7 @@ scForm.addEventListener('comment-sent', e => {
   const commentsRef = firebase.firestore().collection('comments');
   commentsRef.add({
     text: e.detail.text,
+    uid: scLogin.user.uid,
     photoUrl: scLogin.user.photoURL,
     authorName: scLogin.user.displayName,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
