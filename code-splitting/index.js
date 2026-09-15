@@ -45,6 +45,9 @@ app.get(toplevelSection, (req, res) => {
   // Extract the menu item name from the path and attach it to
   // the request to have it available for template rendering.
   req.item = req.params[0];
+  if (req.item.includes('/') || req.item.includes('\\') || req.item === '..') {
+    return res.status(400).send('Bad request');
+  }
 
   // If the request has `?partial`, don't render header and footer.
   let files;
