@@ -1,5 +1,6 @@
 const util = require('util');
 const fs = require('fs');
+const path = require('path');
 const crypto = require('crypto');
 
 const staticModule = require('static-module');
@@ -77,7 +78,11 @@ router.get('/', wrap(async(req, res) => {
 router.get('/who/', (req, res) => res.render('who'));
 
 router.get('/:year(\\d{4})/:slug/:include(include)?', wrap(async (req, res) => {
-  const dir = `${__dirname}/../posts/${req.params.slug}`;
+  const postsRoot = path.resolve(__dirname, '../posts');
+  const dir = path.resolve(postsRoot, req.params.slug);
+  if (dir !== postsRoot && !dir.startsWith(postsRoot + path.sep)) {
+    throw new Error404();
+  }
   const contentPromise = readFileOr404(`${dir}/content.md`, 'utf-8');
   const meta = JSON.parse(await readFileOr404(`${dir}/meta.json`, 'utf-8'));
 
