@@ -25,9 +25,14 @@ const dot = require('dot');
 dot.templateSettings.strip = false;
 
 const crypto = require('crypto');
+const path = require('path');
 
 const app = express();
-app.use('/node_modules', express.static('node_modules'));
+// Only expose the single client-side dependency actually loaded by
+// app/sw.js (doT.min.js), avoiding any exposure of node_modules directories.
+app.get('/node_modules/dot/doT.min.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'node_modules/dot/doT.min.js'));
+});
 // Matches paths like `/`, `/index.html`, `/about/` or `/about/index.html`.
 const toplevelSection = /([^/]*)(\/|\/index.html)$/;
 app.get(toplevelSection, (req, res) => {
