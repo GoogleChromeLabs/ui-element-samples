@@ -27,7 +27,10 @@ dot.templateSettings.strip = false;
 const crypto = require('crypto');
 
 const app = express();
-app.use('/node_modules', express.static('node_modules'));
+// Only expose the single client-side dependency actually loaded by
+// app/sw.js (doT.min.js). Serving the whole node_modules tree leaks
+// exact installed dependency versions to any HTTP client.
+app.use('/node_modules/dot', express.static('node_modules/dot'));
 // Matches paths like `/`, `/index.html`, `/about/` or `/about/index.html`.
 const toplevelSection = /([^/]*)(\/|\/index.html)$/;
 app.get(toplevelSection, (req, res) => {
